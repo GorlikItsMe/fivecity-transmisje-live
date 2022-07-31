@@ -48,35 +48,39 @@ export default async function handler(
     return p.socialLinks.twitch != null;
   });
 
-  // i must call this function soo api will get token etc
+  // try use api (first call to api will authenticate you, get oauth token etc)
   await api.getStreamerByName("ewroon");
 
   const isLivePromiseList = twitchStreamers.map((p) => {
     return limit(async () => {
-      const c = p.socialLinks.twitch?.split("/") ?? [];
-      const name1 = c[c.length - 1];
-      const name2 = c[c.length - 2];
-      const twitchTvName = name1 != "" ? name1 : name2;
-
-      const s = await api.getStreamerByName(twitchTvName);
-      const isLive = s?.is_live ?? false;
+      let isLive = false;
       let viewerCount = 0;
       let isFiveCity = false;
-      if (isLive) {
-        const liveInfo = await api.getStreamerOnline(`${s?.id}`);
-        // Here check who is streaming FiveCity
-        if (liveInfo?.game_name === GTA) {
-          const titleWords = liveInfo.title.split(" ");
-          const whitelist = ["[5city]", "5city", "fivecity", "5miasto"]; // important set it lowercase!
-          for (let i = 0; i < titleWords.length; i++) {
-            if (whitelist.includes(titleWords[i].toLowerCase())) {
-              isFiveCity = true;
-              break;
+      let twitchTvName = null;
+
+      if (p.socialLinks.twitch != null) {
+        const c = p.socialLinks.twitch.split("/") ?? [];
+        twitchTvName = c[c.length - 1];
+
+        const s = await api.getStreamerByName(twitchTvName);
+        isLive = s?.is_live ?? false;
+
+        if (isLive) {
+          const liveInfo = await api.getStreamerOnline(`${s?.id}`);
+          // Here check who is streaming FiveCity
+          if (liveInfo?.game_name === GTA) {
+            const titleWords = liveInfo.title.split(" ");
+            const whitelist = ["[5city]", "5city", "fivecity", "5miasto"]; // important set it lowercase!
+            for (let i = 0; i < titleWords.length; i++) {
+              if (whitelist.includes(titleWords[i].toLowerCase())) {
+                isFiveCity = true;
+                break;
+              }
             }
           }
-        }
 
-        viewerCount = liveInfo?.viewer_count ?? 0;
+          viewerCount = liveInfo?.viewer_count ?? 0;
+        }
       }
       return {
         wikiLink: p.wikiLink,

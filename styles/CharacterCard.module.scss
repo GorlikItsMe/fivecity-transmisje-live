@@ -1,38 +1,67 @@
 .characterBox {
   display: flex;
-  background-color: rgba(255, 255, 255, 0.2);
-  margin: 15px 0px;
-  height: 150px;
+  background-color: rgba(0, 0, 0, 0.2);
+
+  margin: 15px;
+  // height: 150px;
+  // height: 580px;
   border-radius: 10px;
+
+  .imageRow {
+    position: relative;
+    height: 250px;
+    width: 128px;
+  }
+
+  .characterInfo {
+    padding-top: 1px;
+    padding-right: 5px;
+    width: calc(100% - 128px);
+  }
+
+  .characterName {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
 }
 
-.characterBox .imageRow {
-  position: relative;
-  height: 150px;
-  width: 128px;
+.characterBox.isLive {
+  background-color: #1c1c20;
+  box-shadow: 0px 0px 20px #8e54e9;
+}
+.characterBox.isLive .imageRow img {
+  border-top-left-radius: 10px;
 }
 
-.characterBox .imageRow img {
+.characterBox.isOffline {
+  width: 350px;
+  box-shadow: 0px 0px 10px #4776e6;
+}
+.characterBox.isOffline .imageRow img {
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
 
-.characterBox .characterInfo {
-  padding: 10px;
-  width: calc(100% - 128px);
+.characterBox.isOffline .characterInfo {
+  padding: 10px !important;
 }
-
-.characterName {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 0px;
-  margin-bottom: 2px;
-}
-
 
 .socialMediaList {
+  margin-bottom: 20px;
+  i {
+    margin: 2px;
+  }
+}
 
-    i{
-        margin: 2px
-    }
+.leftRowInfo {
+  padding: 8px;
+  h2 {
+    text-align: center;
+  }
+}
+
+.socialMediaLink {
+  display: block;
+  margin: 6px 0px;
 }

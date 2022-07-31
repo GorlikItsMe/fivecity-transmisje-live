@@ -4,6 +4,21 @@ import pLimit from "p-limit";
 
 const limit = pLimit(200);
 
+function linkNormalizer(url: string | null){
+  if (url == null) {
+    return null;
+  }
+
+  if (url.endsWith("/")) {
+    url = url.slice(0, -1); // remove last / 
+  }
+  url = url.replace('http://', 'https://') // force https
+
+  url = url.split("?")[0] // remove useless parametrs from link
+  return url;
+}
+
+
 async function getCharacterDetails(url: string) {
   const r = await fetch(url);
   if (r.status !== 200) {
@@ -22,21 +37,16 @@ async function getCharacterDetails(url: string) {
     .filter((href) => href?.includes("http"))
     .filter((a) => a !== "");
 
-  const whitelist = ["twitch", "twitter", "youtube", "instagram"];
-  const socialLinks = linkList.filter((href) => {
-    return whitelist.some((element) => href?.includes(element));
-  });
-
   return {
     wikiLink: url,
     image: image,
     name: name,
     socialLinks: {
-      twitch: socialLinks.find((href) => href?.includes("twitch")) ?? null,
-      twitter: socialLinks.find((href) => href?.includes("twitter")) ?? null,
-      youtube: socialLinks.find((href) => href?.includes("youtube")) ?? null,
+      twitch: linkNormalizer(linkList.find((href) => href?.includes("twitch")) ?? null),
+      twitter: linkNormalizer(linkList.find((href) => href?.includes("twitter")) ?? null),
+      youtube: linkNormalizer(linkList.find((href) => href?.includes("youtube")) ?? null),
       instagram:
-        socialLinks.find((href) => href?.includes("instagram")) ?? null,
+      linkNormalizer(linkList.find((href) => href?.includes("instagram")) ?? null),
     },
   };
 }

@@ -2,8 +2,6 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 a {
@@ -19,8 +17,61 @@ a {
   html {
     color-scheme: dark;
   }
+
   body {
     color: white;
     background: black;
   }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  transition-duration: 500ms;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+
+/* COPY FROM fivecity.net */
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none;
+  color: #482ff7;
+}
+
+body {
+  background: #161617;
+  font-family: 'Poppins', sans-serif;
+
+  background: url("/bg.png") no-repeat fixed;
+  background-size: auto;
+  background-size: cover;
+}
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #000;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 1px;
+  background: linear-gradient(45deg, #4776E6, #8E54E9);
+  /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);  */
 }

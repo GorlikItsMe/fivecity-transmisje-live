@@ -26,9 +26,10 @@ export default async function handler(
 
   const mystart = new Date().getTime();
 
-  const fivecityStreamers = streamersNow.filter(
-    (p) => p.isLive && p.isFiveCity
-  );
+  const fivecityStreamers = streamersNow;
+  // const fivecityStreamers = streamersNow.filter(
+  //   (p) => p.isLive && p.isFiveCity
+  // );
 
   res.setHeader("Cache-Control", "s-maxage=60"); // cache 1 minute
   res.status(200).json(fivecityStreamers);
