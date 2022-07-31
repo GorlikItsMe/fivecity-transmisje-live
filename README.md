@@ -1,6 +1,6 @@
 # FiveCity Transmisje Live
 
-App where you can find who is online now and check theys streams. (TODO change that description)
+Tutaj kiedyś będzie porządny opis, ale to dopiero jak wygląd będzie normalny a nie to co jest XD
 
 ## Setup
 
