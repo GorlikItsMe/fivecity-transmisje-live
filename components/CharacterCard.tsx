@@ -101,7 +101,8 @@ function SocialMediaList({ streamer }: { streamer: StreamerData }) {
 
 export function CharacterCard({ streamer }: { streamer: StreamerData }) {
   // const twitchEmbedLink = `https://embed.twitch.tv?autoplay=false&channel=${streamer.twitchTvName}&height=480&parent=localhost&referrer=http%3A%2F%2Flocalhost%3A3000%2F&theme=dark&width=854`
-  const twitchEmbedLink = `https://embed.twitch.tv?autoplay=false&channel=${streamer.twitchTvName}&parent=localhost&theme=dark&width=854&height=480`;
+  const host = window.location.host;
+  const twitchEmbedLink = `https://embed.twitch.tv?autoplay=false&channel=${streamer.twitchTvName}&parent=${host}&theme=dark&width=854&height=480`;
   const isLive =
     streamer.isLive && streamer.isFiveCity && streamer.twitchTvName;
 
