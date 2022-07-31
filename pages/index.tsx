@@ -2,9 +2,17 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
+  const [streamersList, setStreamersList] = useState(null);
+  useEffect(() => {
+    fetch("https://fivecity-transmisje-live.vercel.app/api/fivecity_streamers")
+      .then((res) => res.json())
+      .then((data) => setStreamersList(data));
+  }, []);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -30,6 +38,8 @@ const Home: NextPage = () => {
             Repozytorium na github kliknij tutaj
           </a>
         </div>
+
+        <div>{!streamersList && <h2>Ładowanie...</h2>}</div>
       </main>
 
       <footer className={styles.footer}>

@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/cors": "^2.8.12",
+    "cors": "^2.8.5",
     "next": "12.2.3",
     "node-html-parser": "^5.3.3",
     "p-limit": "^4.0.0",

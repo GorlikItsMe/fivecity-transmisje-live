@@ -1,6 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Data as ApiAllStreamersData } from "./all_streamers";
+import Cors from "cors";
+import { runMiddleware } from "../../lib/runMiddleware";
+
+const cors = Cors({
+  methods: ["GET", "HEAD"],
+});
 
 type Data = ApiAllStreamersData;
 
@@ -8,6 +14,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  await runMiddleware(req, res, cors);
+
   const start = new Date().getTime();
 
   // Get cached list of all streamers
