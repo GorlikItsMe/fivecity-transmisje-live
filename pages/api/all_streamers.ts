@@ -69,14 +69,18 @@ export default async function handler(
           const liveInfo = await api.getStreamerOnline(`${s?.id}`);
           // Here check who is streaming FiveCity
           if (liveInfo?.game_name === GTA) {
-            const titleWords = liveInfo.title.split(" ");
-            const whitelist = ["[5city]", "5city", "fivecity", "5miasto"]; // important set it lowercase!
-            for (let i = 0; i < titleWords.length; i++) {
-              if (whitelist.includes(titleWords[i].toLowerCase())) {
-                isFiveCity = true;
-                break;
-              }
-            }
+            // nie wszyscy mają odpowiednie tytuły
+            
+            // const titleWords = liveInfo.title.split(" ");
+            // const whitelist = ["[5city]", "5city", "fivecity", "5miasto"]; // important set it lowercase!
+            // for (let i = 0; i < titleWords.length; i++) {
+            //   if (whitelist.includes(titleWords[i].toLowerCase())) {
+            //     isFiveCity = true;
+            //     break;
+            //   }
+            // }
+
+            isFiveCity = true;
           }
 
           viewerCount = liveInfo?.viewer_count ?? 0;
