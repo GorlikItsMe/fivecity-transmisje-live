@@ -101,8 +101,9 @@ function SocialMediaList({ streamer }: { streamer: StreamerData }) {
 
 export function CharacterCard({ streamer }: { streamer: StreamerData }) {
   // const twitchEmbedLink = `https://embed.twitch.tv?autoplay=false&channel=${streamer.twitchTvName}&height=480&parent=localhost&referrer=http%3A%2F%2Flocalhost%3A3000%2F&theme=dark&width=854`
-  const host = window.location.host;
-  const twitchEmbedLink = `https://embed.twitch.tv?autoplay=false&channel=${streamer.twitchTvName}&parent=${host}&theme=dark&width=854&height=480`;
+  const hostname = window.location.hostname;
+  const twitchEmbedLink = `https://player.twitch.tv/?channel=${streamer.twitchTvName}&parent=${hostname}&autoplay=false&theme=dark&width=854&height=480`;
+
   const isLive =
     streamer.isLive && streamer.isFiveCity && streamer.twitchTvName;
 
@@ -146,8 +147,6 @@ export function CharacterCard({ streamer }: { streamer: StreamerData }) {
               allowFullScreen
               scrolling="no"
               allow="autoplay; fullscreen"
-              title="Twitch"
-              sandbox="allow-modals allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation"
               width="854"
               height="480"
               frameBorder="0"
