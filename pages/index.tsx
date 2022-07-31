@@ -16,23 +16,20 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <h1 className={styles.title}>Fivecity transmisje live</h1>
 
-        <p className={styles.description}>
+        <div className={styles.description}>
           <Link href="/api/fivecity_streamers">
             <a>/api/fivecity_streamers</a>
           </Link>
-          <div>
+          <p>
             Podziękowania dla twórców wiki (
             <a href="https://5city.fandom.com/">5city.fandom.com</a>) bo to
             dzięki nim mam linki do wszystkich twórców
-          </div>
-          <div>&nbsp;</div>
-          <div>Ładne UI wkrótce</div>
+          </p>
+          <p>Ładne UI wkrótce</p>
           <a href="https://github/GorlikItsMe/nazwarepo">
             Repozytorium na github kliknij tutaj
           </a>
-        </p>
-
-        <div id="twitch-embed"></div>
+        </div>
       </main>
 
       <footer className={styles.footer}>

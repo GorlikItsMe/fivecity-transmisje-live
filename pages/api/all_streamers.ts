@@ -9,7 +9,7 @@ const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 const GTA = "Grand Theft Auto V";
 
 const api = new TwitchEasy(clientId, clientSecret);
-const limit = pLimit(20);
+const limit = pLimit(200);
 
 export type Data = {
   wikiLink: string;
@@ -30,16 +30,23 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const start = new Date().getTime();
+
   // Get cached list of characters
   const r = await fetch(
     `http://${req.headers.host ?? "localhost"}/api/postaci`
   );
   const postaci: ApiPostaciData = await r.json();
 
+  const mystart = new Date().getTime();
+
   // Get twitch.tv streamers
   const twitchStreamers = postaci.filter((p) => {
     return p.socialLinks.twitch != null;
   });
+
+  // i must call this function soo api will get token etc
+  await api.getStreamerByName("ewroon");
 
   const isLivePromiseList = twitchStreamers.map((p) => {
     return limit(async () => {
@@ -107,4 +114,7 @@ export default async function handler(
 
   res.setHeader("Cache-Control", "s-maxage=60"); // cache 1 minute
   res.status(200).json(sortedIsLiveList2);
+
+  const end = new Date().getTime();
+  console.log(`/api/all_streamers/ Time: ${end - start} (${end - mystart})`);
 }

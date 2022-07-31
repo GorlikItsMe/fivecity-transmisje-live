@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { parse } from "node-html-parser";
 import pLimit from "p-limit";
 
-const limit = pLimit(5);
+const limit = pLimit(200);
 
 async function getCharacterDetails(url: string) {
   const r = await fetch(url);
@@ -57,6 +57,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  const start = new Date().getTime();
+
   const url = "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87";
   const htmlContent = await fetch(url).then((res) => res.text());
   const root = parse(htmlContent);
@@ -71,4 +73,8 @@ export default async function handler(
 
   res.setHeader("Cache-Control", "s-maxage=86400"); // cache 1 day
   res.status(200).json(characterDetailsList);
+  
+
+  const end = new Date().getTime();
+  console.log(`/api/postaci/ Time: ${end - start}`);
 }
