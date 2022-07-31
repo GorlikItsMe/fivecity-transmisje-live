@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
@@ -16,7 +17,9 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>Fivecity transmisje live</h1>
 
         <p className={styles.description}>
-          <a href="/api/fivecity_streamers">/api/fivecity_streamers</a>
+          <Link href="/api/fivecity_streamers">
+            <a>/api/fivecity_streamers</a>
+          </Link>
           <div>
             Podziękowania dla twórców wiki (
             <a href="https://5city.fandom.com/">5city.fandom.com</a>) bo to
@@ -24,7 +27,9 @@ const Home: NextPage = () => {
           </div>
           <div>&nbsp;</div>
           <div>Ładne UI wkrótce</div>
-          <a href="https://github/GorlikItsMe/nazwarepo">Repozytorium na github kliknij tutaj</a>
+          <a href="https://github/GorlikItsMe/nazwarepo">
+            Repozytorium na github kliknij tutaj
+          </a>
         </p>
 
         <div id="twitch-embed"></div>
