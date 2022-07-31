@@ -8,7 +8,7 @@ const cors = Cors({
   methods: ["GET", "HEAD"],
 });
 
-type Data = ApiAllStreamersData;
+export type Data = ApiAllStreamersData;
 
 export default async function handler(
   req: NextApiRequest,

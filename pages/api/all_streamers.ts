@@ -11,7 +11,7 @@ const GTA = "Grand Theft Auto V";
 const api = new TwitchEasy(clientId, clientSecret);
 const limit = pLimit(200);
 
-export type Data = {
+export type StreamerData = {
   wikiLink: string;
   image: string | undefined;
   name: string;
@@ -24,7 +24,10 @@ export type Data = {
   isLive: boolean;
   isFiveCity: boolean;
   viewerCount: number;
-}[];
+  twitchTvName: string | null;
+};
+
+export type Data = StreamerData[];
 
 export default async function handler(
   req: NextApiRequest,
@@ -53,9 +56,9 @@ export default async function handler(
       const c = p.socialLinks.twitch?.split("/") ?? [];
       const name1 = c[c.length - 1];
       const name2 = c[c.length - 2];
-      const name = name1 != "" ? name1 : name2;
+      const twitchTvName = name1 != "" ? name1 : name2;
 
-      const s = await api.getStreamerByName(name);
+      const s = await api.getStreamerByName(twitchTvName);
       const isLive = s?.is_live ?? false;
       let viewerCount = 0;
       let isFiveCity = false;
@@ -83,6 +86,7 @@ export default async function handler(
         isLive: isLive,
         isFiveCity: isFiveCity,
         viewerCount: viewerCount,
+        twitchTvName: twitchTvName,
       };
     });
   });

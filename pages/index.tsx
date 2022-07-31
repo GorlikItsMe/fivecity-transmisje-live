@@ -3,10 +3,12 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CharacterCard } from "../components/CharacterCard";
 import styles from "../styles/Home.module.css";
+import { Data as ApiData } from "./api/fivecity_streamers";
 
 const Home: NextPage = () => {
-  const [streamersList, setStreamersList] = useState(null);
+  const [streamersList, setStreamersList] = useState<ApiData | null>(null);
   useEffect(() => {
     fetch("https://fivecity-transmisje-live.vercel.app/api/fivecity_streamers")
       .then((res) => res.json())
@@ -24,22 +26,13 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <h1 className={styles.title}>Fivecity transmisje live</h1>
 
-        <div className={styles.description}>
-          <Link href="/api/fivecity_streamers">
-            <a>/api/fivecity_streamers</a>
-          </Link>
-          <p>
-            Podziękowania dla twórców wiki (
-            <a href="https://5city.fandom.com/">5city.fandom.com</a>) bo to
-            dzięki nim mam linki do wszystkich twórców
-          </p>
-          <p>Ładne UI wkrótce</p>
-          <a href="https://github/GorlikItsMe/nazwarepo">
-            Repozytorium na github kliknij tutaj
-          </a>
+        <div>
+          {!streamersList && <h2>Ładowanie...</h2>}
+          {streamersList &&
+            streamersList.map((streamer, i) => (
+              <CharacterCard streamer={streamer} key={i} />
+            ))}
         </div>
-
-        <div>{!streamersList && <h2>Ładowanie...</h2>}</div>
       </main>
 
       <footer className={styles.footer}>
@@ -52,6 +45,16 @@ const Home: NextPage = () => {
           <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
+        </a>
+        <a
+          href="https://github/GorlikItsMe/fivecity-transmisje-live"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github
+        </a>
+        <a href="https://5city.fandom.com/">
+          Podziękowania dla redaktorów 5city.fandom.com
         </a>
       </footer>
     </div>

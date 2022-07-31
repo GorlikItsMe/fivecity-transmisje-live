@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app";
 import Script from "next/script";
 import "../styles/globals.css";
+import '@fortawesome/fontawesome-free/css/all.css';
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
