@@ -1,20 +1,39 @@
 # FiveCity Transmisje Live
 
-Tutaj kiedyś będzie porządny opis, ale to dopiero jak wygląd będzie normalny a nie to co jest XD
+Aplikacja z listą kanałów Twitch.tv streamerów grających na serwerze FiveCity.
 
 ## Setup
 
-### Create Twitch App
-Go to <https://dev.twitch.tv/docs/api/get-started> and create a new app.
-Warning: You need too factor authentication. Enable it here <https://www.twitch.tv/settings/security>
+### Zdobądz dostęp do API Twitch
 
-You need `TWITCH_API_CLIENT_ID` and `TWITCH_API_CLIENT_SECRET` environment variables.
-## Getting Started
+Idz do <https://dev.twitch.tv/docs/api/get-started> i stwórz nową aplikację  
+Uwaga: Aby utworzyć TwitchApp musisz mieć włączone dwuskładnikowe uwierzytelnianie. Zrobisz to tutaj: <https://www.twitch.tv/settings/security>  
+Zapisz do pliku `.env` zmienne: `TWITCH_API_CLIENT_ID` i `TWITCH_API_CLIENT_SECRET`
 
-First, run the development server:
+### Getting Started
+
+Development server:
 
 ```bash
-npm run dev
-# or
 yarn dev
 ```
+
+Build
+
+```bash
+yarn build
+```
+
+Start production build
+
+```bash
+yarn start
+```
+
+## Contributing
+
+Jeśli chcesz przyczynić się do projektu i ulepszyć go, nie krępuj się, Twoja pomoc jest mile widziana. Czekam na twoje PRy ;-)
+
+## Credits
+
+Stworzenie tej aplikacji nie było by możliwe bez ciężkiej pracy redaktorów <https://5city.fandom.com> którzy dodali informacje o postaciach i kanałach streamerów którzy odgrywalją postacie.
