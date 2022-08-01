@@ -100,19 +100,28 @@ export async function getFiveCityStreamers(hostname: string) {
         const liveInfo = await getStreamerOnline(`${s?.id}`);
 
         if (liveInfo?.game_name === GTA) {
-          // nie wszyscy mają odpowiednie tytuły
+          // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
 
-          // const titleWords = liveInfo.title.split(" ");
-          // const whitelist = ["[5city]", "5city", "fivecity", "5miasto"]; // important set it lowercase!
-          // for (let i = 0; i < titleWords.length; i++) {
-          //   if (whitelist.includes(titleWords[i].toLowerCase())) {
-          //     isFiveCity = true;
-          //     break;
-          //   }
-          // }
+          const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
+          const blacklist = ["77rp"];
 
-          isLive = true;
-          viewerCount = liveInfo?.viewer_count ?? 0;
+          for (let i = 0; i < whitelist.length; i++) {
+            const goodWord = whitelist[i];
+            if (liveInfo.title.toLowerCase().includes(goodWord.toLowerCase())) {
+              isLive = true;
+              viewerCount = liveInfo?.viewer_count ?? 0;
+              break;
+            }
+          }
+          for (let i = 0; i < blacklist.length; i++) {
+            const badWord = blacklist[i];
+            if (liveInfo.title.toLowerCase().includes(badWord.toLowerCase())) {
+              isLive = false;
+              viewerCount = 0;
+              break;
+            }
+          }
+          // console.log(isLive ? "✔️" : "❌", liveTitle);
         }
       }
 
