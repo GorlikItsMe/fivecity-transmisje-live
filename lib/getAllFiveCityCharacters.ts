@@ -162,7 +162,7 @@ async function getCharacterDetails(url: string) {
       "https://www.youtube.com/"
     );
 
-    return socialLink;
+    return socialLink.toLocaleLowerCase();
   }
 
   return {
