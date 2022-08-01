@@ -1,7 +1,6 @@
 import { Data as CharactersApiResponse } from "../pages/api/v1/characters";
 import TwitchEasy from "twitch-easy";
 import pLimit from "p-limit";
-import retry from "retry";
 import {
   StreamerByName,
   StreamerOnline,
