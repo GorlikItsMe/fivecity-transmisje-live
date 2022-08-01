@@ -13,6 +13,6 @@ export default async function handler(
   const hostname = req.headers.host ?? "localhost";
   const data = await getFiveCityStreamers(hostname);
 
-  res.setHeader("Cache-Control", "s-maxage=300"); // cache 5 minutes
+  res.setHeader("Cache-Control", "s-maxage=60"); // cache 1 minute
   res.status(200).json(data);
 }

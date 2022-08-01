@@ -18,6 +18,34 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   return true;
 }
 
+function getStreamerByName(
+  name: string,
+  maxRetry: number = 3
+): Promise<StreamerByName | null> {
+  try {
+    return api.getStreamerByName(name);
+  } catch (error) {
+    if (maxRetry > 0) {
+      return getStreamerByName(name, maxRetry - 1);
+    }
+    throw error;
+  }
+}
+
+function getStreamerOnline(
+  id: string,
+  maxRetry: number = 3
+): Promise<StreamerOnline | null> {
+  try {
+    return api.getStreamerOnline(id);
+  } catch (error) {
+    if (maxRetry > 0) {
+      return getStreamerOnline(id, maxRetry - 1);
+    }
+    throw error;
+  }
+}
+
 export type StreamerData = {
   image: string;
   name: string;
@@ -29,6 +57,7 @@ export type StreamerData = {
     facebook: string | null;
   };
   viewerCount: number;
+  isLive: boolean;
 
   characters: {
     name: string;
@@ -55,34 +84,6 @@ export async function getFiveCityStreamers(hostname: string) {
   );
   console.log(`${twitchStreamers.length} Streamerów`);
 
-  function getStreamerByName(
-    name: string,
-    maxRetry: number = 3
-  ): Promise<StreamerByName | null> {
-    try {
-      return api.getStreamerByName(name);
-    } catch (error) {
-      if (maxRetry > 0) {
-        return getStreamerByName(name, maxRetry - 1);
-      }
-      throw error;
-    }
-  }
-
-  function getStreamerOnline(
-    id: string,
-    maxRetry: number = 3
-  ): Promise<StreamerOnline | null> {
-    try {
-      return api.getStreamerOnline(id);
-    } catch (error) {
-      if (maxRetry > 0) {
-        return getStreamerOnline(id, maxRetry - 1);
-      }
-      throw error;
-    }
-  }
-
   const data = twitchStreamers.map((twitchUrl) => {
     return limit(async () => {
       const myCharList = characters.filter(
@@ -93,10 +94,26 @@ export async function getFiveCityStreamers(hostname: string) {
       const s = await getStreamerByName(channelName);
       //   const s = await api.getStreamerByName(channelName);
       let viewerCount = 0;
-      if (s?.is_live ?? false) {
+      let isLive = s?.is_live ?? false;
+      if (isLive) {
         // const liveInfo = await api.getStreamerOnline(`${s?.id}`);
         const liveInfo = await getStreamerOnline(`${s?.id}`);
-        viewerCount = liveInfo?.viewer_count ?? 0;
+
+        if (liveInfo?.game_name === GTA) {
+          // nie wszyscy mają odpowiednie tytuły
+
+          // const titleWords = liveInfo.title.split(" ");
+          // const whitelist = ["[5city]", "5city", "fivecity", "5miasto"]; // important set it lowercase!
+          // for (let i = 0; i < titleWords.length; i++) {
+          //   if (whitelist.includes(titleWords[i].toLowerCase())) {
+          //     isFiveCity = true;
+          //     break;
+          //   }
+          // }
+
+          isLive = true;
+          viewerCount = liveInfo?.viewer_count ?? 0;
+        }
       }
 
       let d: StreamerData;
@@ -111,6 +128,7 @@ export async function getFiveCityStreamers(hostname: string) {
           facebook: myCharList[0].socialLinks.facebook,
         },
         viewerCount: viewerCount,
+        isLive: isLive,
 
         characters: myCharList.map((c) => {
           return {
@@ -124,5 +142,28 @@ export async function getFiveCityStreamers(hostname: string) {
     });
   });
 
-  return await Promise.all(data);
+  const streamersList = await Promise.all(data);
+  const sortedList = streamersList.sort((a, b) => {
+    if (a.isLive && !b.isLive) {
+      return -1;
+    }
+    if (!a.isLive && b.isLive) {
+      return 1;
+    }
+    if (a.viewerCount > b.viewerCount) {
+      return -1;
+    }
+    if (a.viewerCount < b.viewerCount) {
+      return 1;
+    }
+    if (a.name > b.name) {
+      return -1;
+    }
+    if (a.name < b.name) {
+      return 1;
+    }
+    return 0;
+  });
+
+  return sortedList;
 }
