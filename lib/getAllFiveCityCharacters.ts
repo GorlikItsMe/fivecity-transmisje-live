@@ -124,7 +124,7 @@ async function getCharacterDetails(url: string) {
 
   function getSocialLink(socialName: string) {
     const a = code.split(mainComponentName)[1].split(`${socialName}=`)[1];
-    if (a == undefined) {
+    if (a == undefined || a.startsWith("}}")) {
       return null;
     }
     const socialTag = splitByCharacterList(["\n", "|"], a)[0].trim();

@@ -94,8 +94,8 @@ export async function getFiveCityStreamers(hostname: string) {
       const s = await getStreamerByName(channelName);
       //   const s = await api.getStreamerByName(channelName);
       let viewerCount = 0;
-      let isLive = s?.is_live ?? false;
-      if (isLive) {
+      let isLive = false;
+      if (s?.is_live ?? false) {
         // const liveInfo = await api.getStreamerOnline(`${s?.id}`);
         const liveInfo = await getStreamerOnline(`${s?.id}`);
 
