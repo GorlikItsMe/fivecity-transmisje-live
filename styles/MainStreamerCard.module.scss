@@ -29,7 +29,7 @@
   padding-top: 10px;
   padding-bottom: 10px;
 
-  // gap: 2px;
+  // max-height: 600px;
 }
 
 .streamerBtn {
@@ -57,9 +57,13 @@
     line-height: 30px;
     align-items: center;
     padding-left: 10px;
-
+    
     color: #ffffff;
   }
+}
+
+.streamerBtn.isSelected{
+  box-shadow: 0px 0px 10px #4776e6
 }
 
 .characterList {
@@ -97,6 +101,8 @@
       display: flex;
       align-items: center;
       height: 100%;
+
+      white-space: pre-wrap;
     }
   }
 }

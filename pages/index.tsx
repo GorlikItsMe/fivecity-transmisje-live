@@ -7,25 +7,29 @@ import { useEffect, useState } from "react";
 import { Data as ApiStreamersData } from "./api/v1/streamers";
 import { MainStreamerCard } from "../components/MainStreamerCard";
 
+const isDebug = process.env.NEXT_PUBLIC_DEBUG?.toLowerCase() == "true" ?? false;
+const apiUrl = isDebug
+  ? "https://fivecity-transmisje-live.vercel.app/api/v1/streamers"
+  : "/api/v1/streamers";
+
 const Home: NextPage = () => {
-  const [stremersList, setStreamersList] = useState<ApiStreamersData>([]);
+  const [streamersList, setStreamersList] = useState<ApiStreamersData>([]);
 
   useEffect(() => {
-    fetch("/api/v1/streamers")
+    fetch(apiUrl)
       .then((r) => r.json())
       .then((r) => setStreamersList(r));
 
     const loop = setInterval(() => {
-      fetch("/api/v1/streamers")
+      fetch(apiUrl)
         .then((r) => r.json())
         .then((r) => setStreamersList(r));
     }, 60000);
     return () => clearInterval(loop);
   }, []);
 
-  const onlineStreamers = stremersList.filter((s) => s.isLive);
 
-  const isLoading = stremersList.length === 0;
+  const isLoading = streamersList.length === 0;
 
   return (
     <div className={styles.container}>
@@ -51,15 +55,15 @@ const Home: NextPage = () => {
 
         {!isLoading && (
           <>
-            <MainStreamerCard streamersList={onlineStreamers} />
-            <br />
-            <p>Pełna lista postaci wkrótce</p>
+            <MainStreamerCard streamersList={streamersList} />
           </>
         )}
       </main>
 
       <footer className={styles.footer}>
-        <a href="https://github.com/GorlikItsMe/fivecity-transmisje-live">Github</a>
+        <a href="https://github.com/GorlikItsMe/fivecity-transmisje-live">
+          Github
+        </a>
         <a href="https://5city.fandom.com/pl/">5city.fandom.com</a>
         <a href="https://discord.com/invite/jz6XhRry">Discord</a>
         <a href="https://5city.fandom.com/pl/" className={styles.right}>

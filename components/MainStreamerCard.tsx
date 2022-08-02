@@ -3,13 +3,15 @@ import { StreamerData } from "../lib/getFiveCityStreamers";
 import styles from "../styles/MainStreamerCard.module.scss";
 import { CharacterInfoCard } from "./CharacterInfoCard";
 import { StreamerBtn } from "./StreamerBtn";
+import Scrollbar from "react-scrollbars-custom";
 
 type Props = {
   streamersList: StreamerData[];
 };
 export function MainStreamerCard({ streamersList }: Props) {
+  const onlineStreamers = streamersList.filter((s) => s.isLive);
   const [streamerName, setStreamerName] = useState<string | null>(null);
-
+  
   useEffect(() => {
     if (streamerName == null) {
       setStreamerName(streamersList[0].name);
@@ -42,15 +44,18 @@ export function MainStreamerCard({ streamersList }: Props) {
         </div>
       </div>
       <div className={styles.streamersList}>
-        {streamersList.map((streamer) => (
-          <StreamerBtn
-            key={streamer.name}
-            streamer={streamer}
-            onClick={() => {
-              setStreamerName(streamer.name);
-            }}
-          />
-        ))}
+        <Scrollbar style={{ height: "600px" }}>
+          {onlineStreamers.map((streamer) => (
+            <StreamerBtn
+              key={streamer.name}
+              streamer={streamer}
+              onClick={() => {
+                setStreamerName(streamer.name);
+              }}
+              isSelected={streamer.name == streamerName}
+            />
+          ))}
+        </Scrollbar>
       </div>
     </div>
   );
