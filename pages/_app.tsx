@@ -25,7 +25,6 @@ const App = ({ Component, pageProps }: AppProps) => {
           `,
         }}
       /> */}
-      {/* <Script src="https://embed.twitch.tv/embed/v1.js" /> */}
       <Component {...pageProps} />
     </>
   );

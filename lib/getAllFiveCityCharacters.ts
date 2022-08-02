@@ -178,6 +178,9 @@ async function getCharacterDetails(url: string) {
       "https://youtube.com/",
       "https://www.youtube.com/"
     );
+    if (socialName == 'twitch' && socialLink.startsWith("https://www.twitch.tv/")) {
+      return null; // incorrect link ex: https://5city.fandom.com/pl/wiki/Mac_Taylor
+    }
 
     return socialLink.toLocaleLowerCase();
   }

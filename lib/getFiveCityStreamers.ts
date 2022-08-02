@@ -1,16 +1,16 @@
 import { Data as CharactersApiResponse } from "../pages/api/v1/characters";
-import TwitchEasy from "twitch-easy";
+import { ClientCredentialsAuthProvider } from "@twurple/auth";
+import { ApiClient } from "@twurple/api";
 import pLimit from "p-limit";
-import {
-  StreamerByName,
-  StreamerOnline,
-} from "twitch-easy/lib/types/twitchAPI";
 
 const clientId = process.env.TWITCH_API_CLIENT_ID ?? "";
 const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
+
+const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
+const api = new ApiClient({ authProvider });
+
+const limit = pLimit(100);
 const GTA = "Grand Theft Auto V";
-const api = new TwitchEasy(clientId, clientSecret);
-const limit = pLimit(50);
 
 function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   if (value === null || value === undefined) return false;
@@ -18,31 +18,6 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   return true;
 }
 
-function getStreamerByName(
-  name: string,
-  maxRetry: number = 3
-): Promise<StreamerByName | null> {
-  return api.getStreamerByName(name).catch((error: Error) => {
-    console.log("getStreamerByName", error.message, maxRetry);
-    if (maxRetry > 0) {
-      return getStreamerByName(name, maxRetry - 1);
-    }
-    throw error;
-  });
-}
-
-function getStreamerOnline(
-  id: string,
-  maxRetry: number = 3
-): Promise<StreamerOnline | null> {
-  return api.getStreamerOnline(id).catch((error) => {
-    console.log("getStreamerOnline", error.message, maxRetry);
-    if (maxRetry > 0) {
-      return getStreamerOnline(id, maxRetry - 1);
-    }
-    throw error;
-  });
-}
 
 export type CharacterData = {
   name: string;
@@ -66,13 +41,17 @@ export type StreamerData = {
 };
 
 export async function getFiveCityStreamers(hostname: string) {
+  const start_dt = new Date().getTime();
   const apiCharactersUrl = `http://${hostname}/api/v1/characters`;
 
   const [characters, _] = await Promise.all([
     fetch(apiCharactersUrl).then(
       (r) => r.json() as Promise<CharactersApiResponse>
     ),
-    getStreamerByName("ewroon"), // first call to api will generate OAuth token
+    () => {
+      // first call to api will generate OAuth token
+      api.users.getUserByName('ewroon');
+    }
   ]);
 
   let twitchStreamers = characters
@@ -90,49 +69,61 @@ export async function getFiveCityStreamers(hostname: string) {
       );
 
       const channelName = twitchUrl.replace("https://www.twitch.tv/", "");
-      const s = await getStreamerByName(channelName);
-      //   const s = await api.getStreamerByName(channelName);
-      let viewerCount = 0;
-      let isLive = false;
-
-      if (s?.is_live ?? false) {
-        if (s?.game_name === GTA) {
-          // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
-          const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
-          const blacklist = ["77rp"];
-
-          let isBad = false;
-          for (let i = 0; i < blacklist.length; i++) {
-            const badWord = blacklist[i];
-            if (s.title.toLowerCase().includes(badWord.toLowerCase())) {
-              isLive = false;
-              viewerCount = 0;
-              isBad = true;
-              break;
-            }
-          }
-
-          if (!isBad) {
-            for (let i = 0; i < whitelist.length; i++) {
-              const goodWord = whitelist[i];
-              if (s.title.toLowerCase().includes(goodWord.toLowerCase())) {
-                isLive = true;
-                // const liveInfo = await api.getStreamerOnline(`${s?.id}`);
-                const liveInfo = await getStreamerOnline(`${s?.id}`);
-                viewerCount = liveInfo?.viewer_count ?? 0;
-                break;
-              }
-            }
-          }
-
-          // console.log(isLive ? "✔️" : "❌", liveTitle);
+      const user = await api.users.getUserByName(channelName).catch((err) => { return null })
+      if (user == null) {
+        // cant fetch data about that streamer (maybe baned?)
+        return {
+          image: "",
+          name: "",
+          socialMedia: {
+            twitch: null,
+            twitter: null,
+            instagram: null,
+            youtube: null,
+            facebook: null,
+          },
+          viewerCount: 0,
+          isLive: false,
+          characters: [],
         }
       }
+      const stream = await user.getStream()
+
+      let isLive = stream !== null;
+      let viewerCount = stream?.viewers ?? 0;
+
+      const isFiveCityLive = (function () {
+        if (!isLive) { return false }
+        if (stream?.gameName !== GTA) { return false }
+        const sTitle = stream.title;
+
+        // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
+        const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
+        const blacklist = ["77rp"];
+
+        for (let i = 0; i < blacklist.length; i++) {
+          const badWord = blacklist[i];
+          if (sTitle.toLowerCase().includes(badWord.toLowerCase())) {
+            return false; // bad word detected
+          }
+        }
+
+        for (let i = 0; i < whitelist.length; i++) {
+          const goodWord = whitelist[i];
+          if (sTitle.toLowerCase().includes(goodWord.toLowerCase())) {
+            return true; // success
+          }
+        }
+
+        // Nie mogę być pewny czy to jest live z FiveCity czy z innego serwera GTA RP
+        return false;
+      })()
+
 
       let d: StreamerData;
       d = {
-        image: s?.thumbnail_url ?? "",
-        name: s?.display_name ?? "",
+        image: user.profilePictureUrl,
+        name: user.displayName,
         socialMedia: {
           twitch: myCharList[0].socialLinks.twitch,
           twitter: myCharList[0].socialLinks.twitter,
@@ -140,8 +131,8 @@ export async function getFiveCityStreamers(hostname: string) {
           youtube: myCharList[0].socialLinks.youtube,
           facebook: myCharList[0].socialLinks.facebook,
         },
-        viewerCount: viewerCount,
-        isLive: isLive,
+        viewerCount: isFiveCityLive ? viewerCount : 0,
+        isLive: isFiveCityLive,
 
         characters: myCharList.map((c) => {
           return {
@@ -186,5 +177,7 @@ export async function getFiveCityStreamers(hostname: string) {
     });
 
   console.log(`Znaleziono ${sortedList.length} StreamerData`);
+  const end_dt = new Date().getTime();
+  console.log(`Wygenerowano w: ${end_dt - start_dt}ms -> ${(end_dt - start_dt) / 1000}sek -> AVG per Streamer ${(end_dt - start_dt) / streamersList.length}`);
   return sortedList;
 }
