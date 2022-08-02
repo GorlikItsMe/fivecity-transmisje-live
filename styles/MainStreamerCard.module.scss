@@ -106,3 +106,32 @@
     }
   }
 }
+
+
+
+@media only screen and (max-width: 1130px) {
+  // mobile
+  .card {
+    max-width: 280px;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .streamPlayer {
+    display: none;
+  }
+  .characterList {
+    display: none;
+  }
+  
+  .streamersList{
+    padding: 0px;
+    // background-color: pink;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+  }
+  
+
+}

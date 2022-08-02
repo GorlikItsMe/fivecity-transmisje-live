@@ -11,18 +11,34 @@ type Props = {
 export function MainStreamerCard({ streamersList }: Props) {
   const onlineStreamers = streamersList.filter((s) => s.isLive);
   const [streamerName, setStreamerName] = useState<string | null>(null);
-  
+
   useEffect(() => {
     if (streamerName == null) {
       setStreamerName(streamersList[0].name);
     }
   }, [streamerName, streamersList]);
   const hostname = window.location.hostname;
-  const twitchEmbedLink = streamerName
-    ? `https://player.twitch.tv/?channel=${streamerName}&parent=${hostname}&autoplay=false&theme=dark&width=854&height=480`
-    : "about:blank";
+  const isMobile = window.innerWidth <= 1130;
+
+  const twitchEmbedLink =
+    streamerName && !isMobile
+      ? `https://player.twitch.tv/?channel=${streamerName}&parent=${hostname}&autoplay=false&theme=dark&width=854&height=480`
+      : "about:blank";
 
   const streamer = streamersList.find((s) => s.name === streamerName) ?? null;
+
+  function changeStream(s: StreamerData) {
+    const isMobile = window.innerWidth <= 1130;
+    if (isMobile) {
+      // open in new tab twitch link
+      if (s.socialMedia.twitch) {
+        window.open(s.socialMedia.twitch, "_blank");
+      }
+    } else {
+      // change iframe link
+      setStreamerName(s.name);
+    }
+  }
 
   return (
     <div className={styles.card}>
@@ -49,9 +65,7 @@ export function MainStreamerCard({ streamersList }: Props) {
             <StreamerBtn
               key={streamer.name}
               streamer={streamer}
-              onClick={() => {
-                setStreamerName(streamer.name);
-              }}
+              onClick={() => changeStream(streamer)}
               isSelected={streamer.name == streamerName}
             />
           ))}
