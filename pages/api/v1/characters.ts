@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { CharacterData } from "../../../lib/getAllFiveCityCharacters";
 import { getAllFiveCityCharactersAPI } from "../../api_with_cache_workaround/getAllFiveCityCharacters";
 
-type Data = CharacterData[];
+export type Data = CharacterData[];
 
 export default async function handler(
   req: NextApiRequest,

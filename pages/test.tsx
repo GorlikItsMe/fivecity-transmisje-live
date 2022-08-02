@@ -1,13 +1,24 @@
-import type { NextPage, GetStaticProps, InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/NewHome.module.scss";
 import FiveCityLogo from "../public/FiveCityLogo.svg";
-import { getAllFiveCityCharacters } from "../lib/getAllFiveCityCharacters";
+import { useEffect, useState } from "react";
+import { Data as ApiStreamersData } from "./api/v1/streamers";
 
-const Home: NextPage = ({
-  characters,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+export default function TestPage() {
+  const [stremersList, setStreamersList] = useState<ApiStreamersData>([]);
+
+  useEffect(() => {
+    const loop = setInterval(() => {
+      fetch("/api/v1/streamers")
+        .then((r) => r.json())
+        .then((r) => setStreamersList(r));
+    }, 60000);
+    return () => clearInterval(loop);
+  }, []);
+
+  const onlineStreamers = stremersList.filter((s) => s.isLive);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -27,30 +38,15 @@ const Home: NextPage = ({
             />{" "}
             transmisje live
           </h1>
-          <p>Ładowanie...</p>
+          <div>
+            {onlineStreamers.map((s, i) => (
+              <p key={i}>
+                <a href={s.socialMedia.twitch ?? "#"}>{s.name}</a>
+              </p>
+            ))}
+          </div>
         </div>
-
-        <p>Tak naprawde to nic sie nie ładuje bo dopiero robię tą stronę</p>
       </main>
-
-      <footer className={styles.footer}>
-        <a href="https://github/GorlikItsMe/fivecity-transmisje-live">Github</a>
-        <a href="https://5city.fandom.com/pl/">5city.fandom.com</a>
-        <a href="https://discord.com/invite/jz6XhRry">Discord</a>
-        <a href="https://5city.fandom.com/pl/" className={styles.right}>
-          Podziękowania dla redaktorów 5city.fandom.com
-        </a>
-      </footer>
     </div>
   );
-};
-
-export const getStaticProps: GetStaticProps = async () => {
-  return {
-    props: {
-      characters: await getAllFiveCityCharacters(),
-    },
-  };
-};
-
-export default Home;
+}

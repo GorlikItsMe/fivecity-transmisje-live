@@ -124,7 +124,7 @@ async function getCharacterDetails(url: string) {
 
   function getSocialLink(socialName: string) {
     const a = code.split(mainComponentName)[1].split(`${socialName}=`)[1];
-    if (a == undefined) {
+    if (a == undefined || a.startsWith("}}")) {
       return null;
     }
     const socialTag = splitByCharacterList(["\n", "|"], a)[0].trim();
@@ -143,7 +143,26 @@ async function getCharacterDetails(url: string) {
     if (socialLink == "" || socialLink.startsWith("-")) {
       return null;
     }
-    return socialLink;
+
+    // fix links (all must look the same soo rest scripts can work)
+    socialLink = socialLink.replace(
+      "https://twitch.tv/",
+      "https://www.twitch.tv/"
+    );
+    socialLink = socialLink.replace(
+      "https://instagram.com/",
+      "https://www.instagram.com/"
+    );
+    socialLink = socialLink.replace(
+      "https://www.twitter.com/",
+      "https://twitter.com/"
+    );
+    socialLink = socialLink.replace(
+      "https://youtube.com/",
+      "https://www.youtube.com/"
+    );
+
+    return socialLink.toLocaleLowerCase();
   }
 
   return {
@@ -222,5 +241,6 @@ export async function getAllFiveCityCharacters(): Promise<CharacterData[]> {
   //   characterDetailsList.push(await getCharacterDetails(url));
   // }
 
+  console.log(`Wczytano ${characterDetailsList.length} postaci`);
   return characterDetailsList;
 }
