@@ -9,7 +9,7 @@ const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const api = new ApiClient({ authProvider });
 
-const limit = pLimit(100);
+const limit = pLimit(900);
 const GTA = "Grand Theft Auto V";
 
 function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
