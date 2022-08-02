@@ -1,7 +1,6 @@
 import { parse } from "node-html-parser";
 import pLimit from "p-limit";
 
-const limit = pLimit(100);
 
 function caseInsensetiveSplit(str: string, separator: string) {
   // https://stackoverflow.com/questions/67227386/javascript-how-to-make-a-split-case-insensitive
@@ -178,7 +177,7 @@ async function getCharacterDetails(url: string) {
       "https://youtube.com/",
       "https://www.youtube.com/"
     );
-    if (socialName == 'twitch' && socialLink.startsWith("https://www.twitch.tv/")) {
+    if (socialName == 'twitch' && !socialLink.startsWith("https://www.twitch.tv/")) {
       return null; // incorrect link ex: https://5city.fandom.com/pl/wiki/Mac_Taylor
     }
 
@@ -231,7 +230,9 @@ export type CharacterData = {
   };
 };
 
-export async function getAllFiveCityCharacters(): Promise<CharacterData[]> {
+export async function getAllFiveCityCharacters(concurency = 100): Promise<CharacterData[]> {
+  const limit = pLimit(concurency);
+
   const url_s2 = "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87";
   const url_s1 =
     "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87_(Sezon_1)";
