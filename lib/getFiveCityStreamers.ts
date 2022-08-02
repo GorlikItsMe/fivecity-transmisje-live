@@ -1,7 +1,10 @@
-import { Data as CharactersApiResponse } from "../pages/api/v1/characters";
+import { Data as CharactersApiResponse } from "../api/v1/characters";
 import { ClientCredentialsAuthProvider } from "@twurple/auth";
 import { ApiClient } from "@twurple/api";
-import pLimit from "p-limit";
+import { join } from "path";
+import { readFileSync } from "fs";
+import { TwitchCachedUser } from "./getTwitchUsersData";
+import { notEmpty } from './notEmpty';
 
 const clientId = process.env.TWITCH_API_CLIENT_ID ?? "";
 const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
@@ -9,15 +12,7 @@ const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const api = new ApiClient({ authProvider });
 
-const limit = pLimit(900);
 const GTA = "Grand Theft Auto V";
-
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  if (value === null || value === undefined) return false;
-  const testDummy: TValue = value;
-  return true;
-}
-
 
 export type CharacterData = {
   name: string;
@@ -40,19 +35,14 @@ export type StreamerData = {
   characters: CharacterData[];
 };
 
-export async function getFiveCityStreamers(hostname: string) {
+export async function getFiveCityStreamers() {
   const start_dt = new Date().getTime();
-  const apiCharactersUrl = `http://${hostname}/api/v1/characters`;
 
-  const [characters, _] = await Promise.all([
-    fetch(apiCharactersUrl).then(
-      (r) => r.json() as Promise<CharactersApiResponse>
-    ),
-    () => {
-      // first call to api will generate OAuth token
-      api.users.getUserByName('ewroon');
-    }
-  ]);
+  const characters: CharactersApiResponse = JSON.parse(readFileSync(join(process.cwd(), "data", "characters.json"), { encoding: 'utf8' }))
+  const twitchCachedUserList: TwitchCachedUser[] = JSON.parse(readFileSync(join(process.cwd(), "data", "twitchCachedUsersData.json"), { encoding: 'utf8' }))
+
+  // first call to api will generate OAuth token
+  await api.users.getUserByName('ewroon');
 
   let twitchStreamers = characters
     .map((p) => p.socialLinks.twitch)
@@ -62,93 +52,95 @@ export async function getFiveCityStreamers(hostname: string) {
   );
   console.log(`Sprawdzam ${twitchStreamers.length} Streamerów...`);
 
-  const data = twitchStreamers.map((twitchUrl) => {
-    return limit(async () => {
-      const myCharList = characters.filter(
-        (c) => c.socialLinks.twitch === twitchUrl
-      );
+  const data = twitchStreamers.map(async (twitchUrl) => {
+    const myCharList = characters.filter(
+      (c) => c.socialLinks.twitch === twitchUrl
+    );
 
-      const channelName = twitchUrl.replace("https://www.twitch.tv/", "");
-      const user = await api.users.getUserByName(channelName).catch((err) => { return null })
-      if (user == null) {
-        // cant fetch data about that streamer (maybe baned?)
-        return {
-          image: "",
-          name: "",
-          socialMedia: {
-            twitch: null,
-            twitter: null,
-            instagram: null,
-            youtube: null,
-            facebook: null,
-          },
-          viewerCount: 0,
-          isLive: false,
-          characters: [],
+    const channelName = twitchUrl.replace("https://www.twitch.tv/", "");
+
+    const user = twitchCachedUserList.find((v) => v.displayName.toLowerCase() == channelName.toLowerCase()) ?? null
+    // const user = await api.users.getUserByName(channelName).catch((err) => { return null })
+    if (user == null) {
+      // cant fetch data about that streamer (maybe baned?)
+      return null;
+      // return {
+      //   image: "",
+      //   name: "",
+      //   socialMedia: {
+      //     twitch: null,
+      //     twitter: null,
+      //     instagram: null,
+      //     youtube: null,
+      //     facebook: null,
+      //   },
+      //   viewerCount: 0,
+      //   isLive: false,
+      //   characters: [],
+      // }
+    }
+    const stream = await api.streams.getStreamByUserId(user.id)
+
+    let isLive = stream !== null;
+    let viewerCount = stream?.viewers ?? 0;
+
+    const isFiveCityLive = (function () {
+      if (!isLive) { return false }
+      if (stream?.gameName !== GTA) { return false }
+      const sTitle = stream.title;
+
+      // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
+      const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
+      const blacklist = ["77rp"];
+
+      for (let i = 0; i < blacklist.length; i++) {
+        const badWord = blacklist[i];
+        if (sTitle.toLowerCase().includes(badWord.toLowerCase())) {
+          return false; // bad word detected
         }
       }
-      const stream = await user.getStream()
 
-      let isLive = stream !== null;
-      let viewerCount = stream?.viewers ?? 0;
-
-      const isFiveCityLive = (function () {
-        if (!isLive) { return false }
-        if (stream?.gameName !== GTA) { return false }
-        const sTitle = stream.title;
-
-        // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
-        const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
-        const blacklist = ["77rp"];
-
-        for (let i = 0; i < blacklist.length; i++) {
-          const badWord = blacklist[i];
-          if (sTitle.toLowerCase().includes(badWord.toLowerCase())) {
-            return false; // bad word detected
-          }
+      for (let i = 0; i < whitelist.length; i++) {
+        const goodWord = whitelist[i];
+        if (sTitle.toLowerCase().includes(goodWord.toLowerCase())) {
+          return true; // success
         }
+      }
 
-        for (let i = 0; i < whitelist.length; i++) {
-          const goodWord = whitelist[i];
-          if (sTitle.toLowerCase().includes(goodWord.toLowerCase())) {
-            return true; // success
-          }
-        }
-
-        // Nie mogę być pewny czy to jest live z FiveCity czy z innego serwera GTA RP
-        return false;
-      })()
+      // Nie mogę być pewny czy to jest live z FiveCity czy z innego serwera GTA RP
+      return false;
+    })()
 
 
-      let d: StreamerData;
-      d = {
-        image: user.profilePictureUrl,
-        name: user.displayName,
-        socialMedia: {
-          twitch: myCharList[0].socialLinks.twitch,
-          twitter: myCharList[0].socialLinks.twitter,
-          instagram: myCharList[0].socialLinks.instagram,
-          youtube: myCharList[0].socialLinks.youtube,
-          facebook: myCharList[0].socialLinks.facebook,
-        },
-        viewerCount: isFiveCityLive ? viewerCount : 0,
-        isLive: isFiveCityLive,
+    let d: StreamerData;
+    d = {
+      image: user.profilePictureUrl,
+      name: user.displayName,
+      socialMedia: {
+        twitch: myCharList[0].socialLinks.twitch,
+        twitter: myCharList[0].socialLinks.twitter,
+        instagram: myCharList[0].socialLinks.instagram,
+        youtube: myCharList[0].socialLinks.youtube,
+        facebook: myCharList[0].socialLinks.facebook,
+      },
+      viewerCount: isFiveCityLive ? viewerCount : 0,
+      isLive: isFiveCityLive,
 
-        characters: myCharList.map((c) => {
-          return {
-            name: c.name,
-            wikiLink: c.wikiLink,
-            image: c.image,
-          };
-        }),
-      };
-      return d;
-    });
+      characters: myCharList.map((c) => {
+        return {
+          name: c.name,
+          wikiLink: c.wikiLink,
+          image: c.image,
+        };
+      }),
+    };
+    return d;
   });
 
   const streamersList = await Promise.all(data);
 
   const sortedList = streamersList
+    .filter(notEmpty)
     .filter((sd) => sd.name !== "")
     .sort((a, b) => {
       if (a.isLive && !b.isLive) {

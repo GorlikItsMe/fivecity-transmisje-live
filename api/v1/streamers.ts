@@ -2,9 +2,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import {
   getFiveCityStreamers,
   StreamerData,
-} from "../../../lib/getFiveCityStreamers";
+} from "../../lib/getFiveCityStreamers";
 import Cors from "cors";
-import { runMiddleware } from "../../../lib/runMiddleware";
+import { runMiddleware } from "../../lib/runMiddleware";
 
 const cors = Cors({
   methods: ["GET", "HEAD"],
@@ -19,8 +19,7 @@ export default async function handler(
 ) {
   await runMiddleware(req, res, cors);
 
-  const hostname = req.headers.host ?? "localhost";
-  const data = await getFiveCityStreamers(hostname);
+  const data = await getFiveCityStreamers();
 
   res.setHeader("Cache-Control", "s-maxage=300"); // cache 5 minutes
   res.status(200).json(data);
