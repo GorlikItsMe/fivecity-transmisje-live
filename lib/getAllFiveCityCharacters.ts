@@ -1,4 +1,7 @@
 import { parse } from "node-html-parser";
+import pLimit from "p-limit";
+
+const limit = pLimit(100);
 
 function caseInsensetiveSplit(str: string, separator: string) {
   // https://stackoverflow.com/questions/67227386/javascript-how-to-make-a-split-case-insensitive
@@ -20,11 +23,25 @@ function splitByCharacterList(separators: string[], str: string) {
   return replaced.split("🔪");
 }
 
+function fetchWithRetry(
+  input: RequestInfo | URL,
+  init?: RequestInit | undefined,
+  maxRetry: number = 3
+): Promise<Response> {
+  return fetch(input, init).catch((error) => {
+    if (maxRetry > 0) {
+      console.log(`Retry ${input} (${maxRetry})`);
+      return fetchWithRetry(input, init, maxRetry - 1);
+    }
+    throw error;
+  });
+}
+
 function getImageUrlByNameFromFandom(filename: string): Promise<string> {
   const url = `https://5city.fandom.com/pl/wikia.php?controller=Lightbox&method=getMediaDetail&fileTitle=${encodeURIComponent(
     filename
   )}&format=json`;
-  return fetch(url)
+  return fetchWithRetry(url)
     .then((r) => r.json())
     .then((r) => {
       if (r.rawImageUrl == undefined) {
@@ -37,7 +54,7 @@ function getImageUrlByNameFromFandom(filename: string): Promise<string> {
 async function getCharacterDetails(url: string) {
   // console.log(url);
   const editLink = `${url}?action=edit`;
-  const r = await fetch(editLink);
+  const r = await fetchWithRetry(editLink);
   if (r.status !== 200) {
     throw new Error(`Failed to fetch ${url}`);
   }
@@ -180,7 +197,7 @@ async function getCharacterDetails(url: string) {
 }
 
 async function getAllCharacterLinks(url: string): Promise<string[]> {
-  const root = parse(await fetch(url).then((res) => res.text()));
+  const root = parse(await fetchWithRetry(url).then((res) => res.text()));
   const nextPageUrl =
     root
       .querySelector(".category-page__pagination-next")
@@ -221,18 +238,20 @@ export async function getAllFiveCityCharacters(): Promise<CharacterData[]> {
     getAllCharacterLinks(url_s2),
     getAllCharacterLinks(url_s1),
   ]);
+  // console.log(fandomLinkList.length);
+  // console.log(sezon1LinkList.length);
+  fandomLinkList.push(...sezon1LinkList);
 
-  // stwórz listę gdzie będą wszystkie postaci z s2 oraz reszta postaci z s1 (te których brakuje)
-  const missingChars = sezon1LinkList.filter(
-    (link) => !fandomLinkList.includes(link.replace("/Sezon_1", ""))
+  // remove duplicates from fandomLinkList
+  fandomLinkList = fandomLinkList.filter(
+    (link, index) => fandomLinkList.indexOf(link) == index
   );
 
-  // console.log(fandomLinkList.length);
-  // console.log(missingChars.length);
-  fandomLinkList.push(...missingChars);
-
-  const promiseList = fandomLinkList.map((url) => getCharacterDetails(url));
-  const characterDetailsList = await Promise.all(promiseList);
+  console.log(`Pobieram informacje z ${fandomLinkList.length} stron`);
+  const promiseList = fandomLinkList.map((url) =>
+    limit(() => getCharacterDetails(url))
+  );
+  let characterDetailsList = await Promise.all(promiseList);
 
   // SYNCHRONOUS DEBUG CODE (for debuging purposes)
   // const characterDetailsList: Data = [];
@@ -242,5 +261,40 @@ export async function getAllFiveCityCharacters(): Promise<CharacterData[]> {
   // }
 
   console.log(`Wczytano ${characterDetailsList.length} postaci`);
+
+  // usuń duplikaty postaci (są informacje o postaci z różnych sezonów, wyświetlaj zawsze najnowszy możliwy)
+  characterDetailsList = characterDetailsList.filter((ch) => {
+    // znajdz postaci z takim samym imieniem
+    let dupList = characterDetailsList.filter(
+      (ch2) => ch.name.toLocaleLowerCase() == ch2.name.toLocaleLowerCase()
+    );
+
+    // ułóż linki w kolejności
+    // '' /Sezon_2 /_Sezon_2 /Sezon_1
+    dupList.sort((a, b) => {
+      function abc(url: string) {
+        if (url.endsWith("/Sezon_2")) return 2;
+        if (url.endsWith("/_Sezon_2")) return 3;
+        if (url.endsWith("/Sezon_1")) return 4;
+        return 1;
+      }
+      if (abc(a.wikiLink) < abc(b.wikiLink)) {
+        return -1;
+      } else if (abc(a.wikiLink) > abc(b.wikiLink)) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+    // jeżeli ten link jest pierwszym linkiem z listy -> true
+    // else false
+    if (dupList[0].wikiLink == ch.wikiLink) {
+      return true;
+    }
+    return false;
+  });
+
+  console.log(`Po usunięciu duplikatów ${characterDetailsList.length} postaci`);
   return characterDetailsList;
 }

@@ -10,7 +10,7 @@ const clientId = process.env.TWITCH_API_CLIENT_ID ?? "";
 const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 const GTA = "Grand Theft Auto V";
 const api = new TwitchEasy(clientId, clientSecret);
-const limit = pLimit(100);
+const limit = pLimit(50);
 
 function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   if (value === null || value === undefined) return false;
@@ -22,28 +22,26 @@ function getStreamerByName(
   name: string,
   maxRetry: number = 3
 ): Promise<StreamerByName | null> {
-  try {
-    return api.getStreamerByName(name);
-  } catch (error) {
+  return api.getStreamerByName(name).catch((error: Error) => {
+    console.log("getStreamerByName", error.message, maxRetry);
     if (maxRetry > 0) {
       return getStreamerByName(name, maxRetry - 1);
     }
     throw error;
-  }
+  });
 }
 
 function getStreamerOnline(
   id: string,
   maxRetry: number = 3
 ): Promise<StreamerOnline | null> {
-  try {
-    return api.getStreamerOnline(id);
-  } catch (error) {
+  return api.getStreamerOnline(id).catch((error) => {
+    console.log("getStreamerOnline", error.message, maxRetry);
     if (maxRetry > 0) {
       return getStreamerOnline(id, maxRetry - 1);
     }
     throw error;
-  }
+  });
 }
 
 export type CharacterData = {
@@ -74,7 +72,7 @@ export async function getFiveCityStreamers(hostname: string) {
     fetch(apiCharactersUrl).then(
       (r) => r.json() as Promise<CharactersApiResponse>
     ),
-    api.getStreamerByName("ewroon"), // first call to api will generate OAuth token
+    getStreamerByName("ewroon"), // first call to api will generate OAuth token
   ]);
 
   let twitchStreamers = characters
@@ -83,7 +81,7 @@ export async function getFiveCityStreamers(hostname: string) {
   twitchStreamers = twitchStreamers.filter(
     (c, i) => twitchStreamers.indexOf(c) === i
   );
-  console.log(`${twitchStreamers.length} Streamerów`);
+  console.log(`Sprawdzam ${twitchStreamers.length} Streamerów...`);
 
   const data = twitchStreamers.map((twitchUrl) => {
     return limit(async () => {
@@ -96,32 +94,37 @@ export async function getFiveCityStreamers(hostname: string) {
       //   const s = await api.getStreamerByName(channelName);
       let viewerCount = 0;
       let isLive = false;
+
       if (s?.is_live ?? false) {
-        // const liveInfo = await api.getStreamerOnline(`${s?.id}`);
-        const liveInfo = await getStreamerOnline(`${s?.id}`);
-
-        if (liveInfo?.game_name === GTA) {
+        if (s?.game_name === GTA) {
           // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
-
           const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
           const blacklist = ["77rp"];
 
-          for (let i = 0; i < whitelist.length; i++) {
-            const goodWord = whitelist[i];
-            if (liveInfo.title.toLowerCase().includes(goodWord.toLowerCase())) {
-              isLive = true;
-              viewerCount = liveInfo?.viewer_count ?? 0;
-              break;
-            }
-          }
+          let isBad = false;
           for (let i = 0; i < blacklist.length; i++) {
             const badWord = blacklist[i];
-            if (liveInfo.title.toLowerCase().includes(badWord.toLowerCase())) {
+            if (s.title.toLowerCase().includes(badWord.toLowerCase())) {
               isLive = false;
               viewerCount = 0;
+              isBad = true;
               break;
             }
           }
+
+          if (!isBad) {
+            for (let i = 0; i < whitelist.length; i++) {
+              const goodWord = whitelist[i];
+              if (s.title.toLowerCase().includes(goodWord.toLowerCase())) {
+                isLive = true;
+                // const liveInfo = await api.getStreamerOnline(`${s?.id}`);
+                const liveInfo = await getStreamerOnline(`${s?.id}`);
+                viewerCount = liveInfo?.viewer_count ?? 0;
+                break;
+              }
+            }
+          }
+
           // console.log(isLive ? "✔️" : "❌", liveTitle);
         }
       }
@@ -153,31 +156,35 @@ export async function getFiveCityStreamers(hostname: string) {
   });
 
   const streamersList = await Promise.all(data);
-  const sortedList = streamersList.sort((a, b) => {
-    if (a.isLive && !b.isLive) {
-      return -1;
-    }
-    if (!a.isLive && b.isLive) {
-      return 1;
-    }
-    if (a.viewerCount > b.viewerCount) {
-      return -1;
-    }
-    if (a.viewerCount < b.viewerCount) {
-      return 1;
-    }
 
-    // alphabetical order
-    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
-    if (nameA < nameB) {
-      return -1;
-    }
-    if (nameA > nameB) {
-      return 1;
-    }
-    return 0;
-  });
+  const sortedList = streamersList
+    .filter((sd) => sd.name !== "")
+    .sort((a, b) => {
+      if (a.isLive && !b.isLive) {
+        return -1;
+      }
+      if (!a.isLive && b.isLive) {
+        return 1;
+      }
+      if (a.viewerCount > b.viewerCount) {
+        return -1;
+      }
+      if (a.viewerCount < b.viewerCount) {
+        return 1;
+      }
 
+      // alphabetical order
+      const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+      const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+
+  console.log(`Znaleziono ${sortedList.length} StreamerData`);
   return sortedList;
 }
