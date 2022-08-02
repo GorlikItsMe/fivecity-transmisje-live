@@ -11,6 +11,10 @@ const Home: NextPage = () => {
   const [stremersList, setStreamersList] = useState<ApiStreamersData>([]);
 
   useEffect(() => {
+    fetch("/api/v1/streamers")
+      .then((r) => r.json())
+      .then((r) => setStreamersList(r));
+
     const loop = setInterval(() => {
       fetch("/api/v1/streamers")
         .then((r) => r.json())
