@@ -59,7 +59,7 @@ const Home: NextPage = () => {
       </main>
 
       <footer className={styles.footer}>
-        <a href="https://github/GorlikItsMe/fivecity-transmisje-live">Github</a>
+        <a href="https://github.com/GorlikItsMe/fivecity-transmisje-live">Github</a>
         <a href="https://5city.fandom.com/pl/">5city.fandom.com</a>
         <a href="https://discord.com/invite/jz6XhRry">Discord</a>
         <a href="https://5city.fandom.com/pl/" className={styles.right}>
