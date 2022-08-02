@@ -1,0 +1,102 @@
+.card {
+  width: 1126px;
+  height: 600px;
+
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0px 0px 10px #8e54e9;
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  align-content: stretch;
+
+  .streamersList {
+    width: 272px;
+  }
+}
+
+.streamPlayer {
+  width: 854px;
+  height: 480px;
+  border-radius: 10px 0px 0px 0px;
+}
+
+.streamersList {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  // gap: 2px;
+}
+
+.streamerBtn {
+  width: 250px;
+  height: 50px;
+
+  background: #161617;
+  border-radius: 25px;
+  margin: auto;
+  margin-bottom: 5px;
+  margin-top: 5px;
+
+  display: flex;
+  cursor: pointer;
+
+  img {
+    border-radius: 25px;
+  }
+
+  .name {
+    display: flex;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 30px;
+    align-items: center;
+    padding-left: 10px;
+
+    color: #ffffff;
+  }
+}
+
+.characterList {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.characterInfoCard {
+  width: 250px;
+  height: 100px;
+  display: flex;
+
+  background: #161617;
+  border-radius: 10px;
+  margin: 10px;
+
+  .characterImage {
+    width: 70px !important;
+    height: 100px !important;
+
+    img {
+      border-radius: 10px 0px 0px 10px;
+    }
+  }
+
+  .rightRow {
+    width: calc(250px - 70px);
+    padding-left: 10px;
+
+    .name {
+      font-style: normal;
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 36px;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+  }
+}

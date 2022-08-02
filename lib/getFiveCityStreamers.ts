@@ -46,6 +46,11 @@ function getStreamerOnline(
   }
 }
 
+export type CharacterData = {
+  name: string;
+  wikiLink: string;
+  image: string | null;
+};
 export type StreamerData = {
   image: string;
   name: string;
@@ -59,11 +64,7 @@ export type StreamerData = {
   viewerCount: number;
   isLive: boolean;
 
-  characters: {
-    name: string;
-    wikiLink: string;
-    image: string | null;
-  }[];
+  characters: CharacterData[];
 };
 
 export async function getFiveCityStreamers(hostname: string) {

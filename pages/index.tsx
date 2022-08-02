@@ -3,8 +3,26 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/NewHome.module.scss";
 import FiveCityLogo from "../public/FiveCityLogo.svg";
+import { useEffect, useState } from "react";
+import { Data as ApiStreamersData } from "./api/v1/streamers";
+import { MainStreamerCard } from "../components/MainStreamerCard";
 
 const Home: NextPage = () => {
+  const [stremersList, setStreamersList] = useState<ApiStreamersData>([]);
+
+  useEffect(() => {
+    const loop = setInterval(() => {
+      fetch("/api/v1/streamers")
+        .then((r) => r.json())
+        .then((r) => setStreamersList(r));
+    }, 60000);
+    return () => clearInterval(loop);
+  }, []);
+
+  const onlineStreamers = stremersList.filter((s) => s.isLive);
+
+  const isLoading = stremersList.length === 0;
+
   return (
     <div className={styles.container}>
       <Head>
@@ -24,10 +42,16 @@ const Home: NextPage = () => {
             />{" "}
             transmisje live
           </h1>
-          <p>Ładowanie...</p>
+          {isLoading && <p>Ładowanie...</p>}
         </div>
 
-        <p>Tak naprawde to nic sie nie ładuje bo dopiero robię tą stronę</p>
+        {!isLoading && (
+          <>
+            <MainStreamerCard streamersList={onlineStreamers} />
+            <br />
+            <p>Pełna lista postaci wkrótce</p>
+          </>
+        )}
       </main>
 
       <footer className={styles.footer}>
