@@ -1,4 +1,4 @@
-import { Data as CharactersApiResponse } from "../api/v1/characters";
+import { Data as CharactersApiResponse } from "../pages/api/v1/characters";
 import { ClientCredentialsAuthProvider } from "@twurple/auth";
 import { ApiClient } from "@twurple/api";
 import { join } from "path";

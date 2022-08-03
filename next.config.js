@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  staticPageGenerationTimeout: 60 * 60, // default 60
   reactStrictMode: false,
   swcMinify: true,
+
+  output: 'standalone',
 
   images: {
     domains: ['static.wikia.nocookie.net', 'static-cdn.jtvnw.net'],

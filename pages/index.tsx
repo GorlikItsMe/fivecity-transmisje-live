@@ -4,7 +4,7 @@ import Image from "next/image";
 import styles from "../styles/NewHome.module.scss";
 import FiveCityLogo from "../public/FiveCityLogo.svg";
 import { useEffect, useState } from "react";
-import { Data as ApiStreamersData } from "../api/v1/streamers";
+import { Data as ApiStreamersData } from "./api/v1/streamers";
 import { MainStreamerCard } from "../components/MainStreamerCard";
 
 const isDebug = process.env.NEXT_PUBLIC_DEBUG?.toLowerCase() == "true" ?? false;
