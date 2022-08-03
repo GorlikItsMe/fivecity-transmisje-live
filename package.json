@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "6.1.2",
-    "@twurple/api": "^5.1.8",
-    "@twurple/auth": "^5.1.8",
+    "@twurple/api": "5.2.0",
+    "@twurple/auth": "5.2.0",
     "async-mutex": "^0.3.2",
     "cors": "2.8.5",
     "next": "12.2.3",
@@ -20,7 +20,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-scrollbars-custom": "^4.0.27",
-    "sass": "1.54.0",
+    "sass": "1.54.1",
     "sharp": "0.30.7"
   },
   "devDependencies": {
