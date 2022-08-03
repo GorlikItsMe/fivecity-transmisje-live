@@ -92,13 +92,8 @@ export async function getFiveCityStreamers() {
       if (stream?.gameName !== GTA) { return false }
       const sTitle = stream.title;
 
-      const isWhitelisted = streamersWhitelist.find((v) => v.toLowerCase() == channelName.toLowerCase()) !== null
-      if (isWhitelisted) {
-        return true; // whitelisted soo only check is he play gta v
-      }
-
       // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
-      const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
+      const whitelist = ["[5city]", "5city", "fivecity", "5miasto", "ExileRP"];
       const blacklist = ["77rp"];
 
       for (let i = 0; i < blacklist.length; i++) {
@@ -113,6 +108,11 @@ export async function getFiveCityStreamers() {
         if (sTitle.toLowerCase().includes(goodWord.toLowerCase())) {
           return true; // success
         }
+      }
+
+      const isWhitelisted = streamersWhitelist.find((v) => v.toLowerCase() == channelName.toLowerCase()) !== undefined
+      if (isWhitelisted) {
+        return true; // whitelisted soo only check is he play gta v
       }
 
       // Nie mogę być pewny czy to jest live z FiveCity czy z innego serwera GTA RP
