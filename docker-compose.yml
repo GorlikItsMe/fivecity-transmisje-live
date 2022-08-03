@@ -2,9 +2,10 @@ version: "3.3"
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: "ghcr.io/gorlikitsme/fivecity-transmisje-live:latest"
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: "fivecity_live"
     restart: unless-stopped
     env_file:
