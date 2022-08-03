@@ -5,6 +5,9 @@ import { join } from "path";
 import { readFileSync } from "fs";
 import { TwitchCachedUser } from "./getTwitchUsersData";
 import { notEmpty } from './notEmpty';
+import streamersWhitelistRaw from '../data/streamersWhitelist.json'
+
+const streamersWhitelist: string[] = streamersWhitelistRaw
 
 const clientId = process.env.TWITCH_API_CLIENT_ID ?? "";
 const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
@@ -88,6 +91,11 @@ export async function getFiveCityStreamers() {
       if (!isLive) { return false }
       if (stream?.gameName !== GTA) { return false }
       const sTitle = stream.title;
+
+      const isWhitelisted = streamersWhitelist.find((v) => v.toLowerCase() == channelName.toLowerCase()) !== null
+      if (isWhitelisted) {
+        return true; // whitelisted soo only check is he play gta v
+      }
 
       // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
       const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
