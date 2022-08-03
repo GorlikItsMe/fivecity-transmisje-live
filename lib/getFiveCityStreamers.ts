@@ -93,8 +93,8 @@ export async function getFiveCityStreamers() {
       const sTitle = stream.title;
 
       // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
-      const whitelist = ["[5city]", "5city", "fivecity", "5miasto", "ExileRP"];
-      const blacklist = ["77rp"];
+      const whitelist = ["[5city]", "5city", "fivecity", "5miasto"];
+      const blacklist = ["77rp", "ExileRP"];
 
       for (let i = 0; i < blacklist.length; i++) {
         const badWord = blacklist[i];
