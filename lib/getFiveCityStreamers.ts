@@ -62,11 +62,16 @@ export async function getFiveCityStreamers() {
 
     const channelName = twitchUrl.replace("https://www.twitch.tv/", "");
 
-    const user = twitchCachedUserList.find((v) => v.displayName.toLowerCase() == channelName.toLowerCase()) ?? null
+    let user = twitchCachedUserList.find((v) => v.displayName.toLowerCase() == channelName.toLowerCase()) ?? null
     // const user = await api.users.getUserByName(channelName).catch((err) => { return null })
     if (user == null) {
-      // cant fetch data about that streamer (maybe baned?)
-      return null;
+      console.log(`Not found ${channelName} in twitchCachedUsersData.json`)
+      // cant find cached data about that streamer do it manualy
+      user = await api.users.getUserByName(channelName).catch((err) => { return null })
+      if (user == null) {
+        return null; // cant find, maybe banned
+      }
+
       // return {
       //   image: "",
       //   name: "",
