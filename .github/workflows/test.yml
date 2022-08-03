@@ -19,5 +19,6 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Build
-        run: yarn build
+      # Wyłączone bo /pages/build_json_files.tsx
+      # - name: Build
+      #   run: yarn build
