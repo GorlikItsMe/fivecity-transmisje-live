@@ -54,9 +54,13 @@ export function MainStreamerCard({ streamersList }: Props) {
           frameBorder="0"
         />
         <div className={styles.characterList}>
-          {streamer?.characters.map((c) => (
-            <CharacterInfoCard key={c.name} character={c} />
-          ))}
+          <Scrollbar style={{ height: "120px" }}>
+            <div className={styles.characterList}>
+              {streamer?.characters.map((c) => (
+                <CharacterInfoCard key={c.name} character={c} />
+              ))}
+            </div>
+          </Scrollbar>
         </div>
       </div>
       <div className={styles.streamersList}>

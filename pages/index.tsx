@@ -9,11 +9,13 @@ import { MainStreamerCard } from "../components/MainStreamerCard";
 
 const isDebug = process.env.NEXT_PUBLIC_DEBUG?.toLowerCase() == "true" ?? false;
 const apiUrl = isDebug
-  ? "https://fivecity-transmisje-live.vercel.app/api/v1/streamers"
+  ? "https://5miasto.pl/api/v1/streamers"
   : "/api/v1/streamers";
 
 const Home: NextPage = () => {
-  const [streamersList, setStreamersList] = useState<ApiStreamersData>([]);
+  const [streamersList, setStreamersList] = useState<ApiStreamersData | null>(
+    null
+  );
 
   useEffect(() => {
     fetch(apiUrl)
@@ -28,8 +30,7 @@ const Home: NextPage = () => {
     return () => clearInterval(loop);
   }, []);
 
-
-  const isLoading = streamersList.length === 0;
+  const isLoading = streamersList === null;
 
   return (
     <div className={styles.container}>
@@ -52,7 +53,9 @@ const Home: NextPage = () => {
           </h1>
           {isLoading && <p>Ładowanie...</p>}
         </div>
-
+        {!isLoading && streamersList.length == 0 && (
+          <p>Aktualnie nikt nie streamuje {":-("}</p>
+        )}
         {!isLoading && (
           <>
             <MainStreamerCard streamersList={streamersList} />
