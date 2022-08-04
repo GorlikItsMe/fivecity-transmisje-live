@@ -9,7 +9,7 @@ import { MainStreamerCard } from "../components/MainStreamerCard";
 
 const isDebug = process.env.NEXT_PUBLIC_DEBUG?.toLowerCase() == "true" ?? false;
 const apiUrl = isDebug
-  ? "https://5miasto.pl/api/v1/streamers"
+  ? "https://5miasto.pl/api/v1/streamers_live"
   : "/api/v1/streamers";
 
 const Home: NextPage = () => {
