@@ -68,7 +68,7 @@ const Home: NextPage = () => {
           Github
         </a>
         <a href="https://5city.fandom.com/pl/">5city.fandom.com</a>
-        <a href="https://discord.com/invite/jz6XhRry">Discord</a>
+        <a href="https://discord.gg/twTUD4qpFx">Discord</a>
         <a href="https://5city.fandom.com/pl/" className={styles.right}>
           Podziękowania dla redaktorów 5city.fandom.com
         </a>
