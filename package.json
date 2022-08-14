@@ -15,7 +15,7 @@
     "async-mutex": "^0.3.2",
     "cors": "2.8.5",
     "next": "12.2.5",
-    "node-html-parser": "5.3.3",
+    "node-html-parser": "5.4.1",
     "p-limit": "4.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
