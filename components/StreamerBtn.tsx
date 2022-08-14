@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 import { StreamerData } from "../lib/getFiveCityStreamers";
 import { blurDataURL } from "../lib/imageBlur";
 import styles from "../styles/MainStreamerCard.module.scss";
@@ -35,6 +36,24 @@ export function StreamerBtn({
   onClick: () => void;
   isSelected: boolean;
 }) {
+  const streamerNameRef = useRef<HTMLSpanElement>(null);
+
+  // change font size for large nicknames
+  useEffect(() => {
+    if (streamerNameRef.current) {
+      const defaultFontSize = parseInt(
+        window
+          .getComputedStyle(streamerNameRef.current)
+          .fontSize.replace("px", "")
+      );
+      const delta = streamerNameRef.current.clientWidth - 130;
+      if (delta > 0) {
+        const magic = Math.round(delta / 10);
+        streamerNameRef.current.style.fontSize = `${defaultFontSize - magic}px`;
+      }
+    }
+  }, [streamerNameRef]);
+
   const klass = `${styles.streamerBtn} ${isSelected ? styles.isSelected : ""}`;
   return (
     <div className={klass} onClick={onClick}>
@@ -47,7 +66,9 @@ export function StreamerBtn({
         placeholder="blur"
         blurDataURL={blurDataURL}
       />
-      <span className={styles.name}>{streamer.name}</span>
+      <span className={styles.name} ref={streamerNameRef}>
+        {streamer.name}
+      </span>
       <span className={styles.viewerCount}>
         <StreamViewerIcon /> {streamer.viewerCount}
       </span>
