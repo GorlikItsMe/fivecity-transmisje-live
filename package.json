@@ -20,7 +20,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-scrollbars-custom": "^4.0.27",
-    "sass": "1.54.3",
+    "sass": "1.54.4",
     "sharp": "0.30.7"
   },
   "devDependencies": {
