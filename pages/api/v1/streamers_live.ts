@@ -27,9 +27,9 @@ export default async function handler(
 
     if (data == null) {
       data = await (await getFiveCityStreamers()).filter((p) => p.isLive);
-      cache.put('streamers_live', data, 5 * 60 * 1000); // time in ms
+      cache.put('streamers_live', data, 1 * 60 * 1000); // time in ms
     }
-    res.setHeader("Cache-Control", "s-maxage=300"); // cache 5 minutes
+    res.setHeader("Cache-Control", "s-maxage=60"); // cache 1 minute
     res.status(200).json(data);
 
   });
