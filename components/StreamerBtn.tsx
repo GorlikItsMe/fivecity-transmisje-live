@@ -48,7 +48,7 @@ export function StreamerBtn({
       );
       const delta = streamerNameRef.current.clientWidth - 130;
       if (delta > 0) {
-        const magic = Math.round(delta / 10);
+        const magic = Math.round(delta / 12);
         streamerNameRef.current.style.fontSize = `${defaultFontSize - magic}px`;
       }
     }
