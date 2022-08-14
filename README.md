@@ -55,3 +55,4 @@ Jeśli chcesz przyczynić się do projektu i ulepszyć go, nie krępuj się, Two
 ## Credits
 
 Stworzenie tej aplikacji nie byłoby możliwe bez redaktorów <https://5city.fandom.com>, którzy dodali informacje o postaciach i kanałach streamerów, którzy odgrywają postacie.
+
