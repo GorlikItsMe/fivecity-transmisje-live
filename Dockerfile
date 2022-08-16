@@ -22,7 +22,9 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 # RUN yarn build
-RUN yarn build
+RUN --mount=type=secret,id=NEXT_PUBLIC_GA_ID \
+    export NEXT_PUBLIC_GA_ID=$(cat /run/secrets/NEXT_PUBLIC_GA_ID) && \
+    yarn build
 
 # If using npm comment out above and use below instead
 # RUN npm run build
