@@ -35,3 +35,7 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.repo_slug.outputs.result }}:latest
+          secrets: |
+            "NEXT_PUBLIC_GA_ID=${{ secrets.NEXT_PUBLIC_GA_ID }}"
+            "TWITCH_API_CLIENT_ID=${{ secrets.TWITCH_API_CLIENT_ID }}"
+            "TWITCH_API_CLIENT_SECRET=${{ secrets.TWITCH_API_CLIENT_SECRET }}"
