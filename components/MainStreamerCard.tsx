@@ -30,11 +30,19 @@ export function MainStreamerCard({ streamersList }: Props) {
   function changeStream(s: StreamerData) {
     const isMobile = window.innerWidth <= 1130;
     if (isMobile) {
+      window.gtag("event", "change_stream", {
+        event_category: "mobile",
+        event_label: s.name,
+      });
       // open in new tab twitch link
       if (s.socialMedia.twitch) {
         window.open(s.socialMedia.twitch, "_blank");
       }
     } else {
+      window.gtag("event", "change_stream", {
+        event_category: "desktop",
+        event_label: s.name,
+      });
       // change iframe link
       setStreamerName(s.name);
     }
