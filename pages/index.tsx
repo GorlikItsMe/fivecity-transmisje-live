@@ -56,7 +56,7 @@ const Home: NextPage = () => {
         {!isLoading && streamersList.length == 0 && (
           <p>Aktualnie nikt nie streamuje {":-("}</p>
         )}
-        {!isLoading && (
+        {!isLoading && streamersList.length != 0 && (
           <>
             <MainStreamerCard streamersList={streamersList} />
           </>
