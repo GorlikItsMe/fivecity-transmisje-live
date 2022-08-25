@@ -1,7 +1,6 @@
 import { parse } from "node-html-parser";
 import pLimit from "p-limit";
 
-
 function caseInsensetiveSplit(str: string, separator: string) {
   // https://stackoverflow.com/questions/67227386/javascript-how-to-make-a-split-case-insensitive
   const regEscape = (v: string) =>
@@ -51,8 +50,7 @@ function getImageUrlByNameFromFandom(filename: string): Promise<string> {
 }
 
 async function getCharacterDetails(url: string) {
-  // console.log(url);
-  const editLink = `${url}?action=edit`;
+  /*const editLink = `${url}?action=edit`;
   const r = await fetchWithRetry(editLink);
   if (r.status !== 200) {
     throw new Error(`Failed to fetch ${url}`);
@@ -68,6 +66,27 @@ async function getCharacterDetails(url: string) {
       ?.text.replace("/Sezon 1", "")
       .replace("/ Sezon 2", "") ?? ""
   ).trim();
+  */
+
+  // NEW FANDOM API
+  const pageName = url.replace("https://5city.fandom.com/pl/wiki/", "");
+  const editLink = `https://5city.fandom.com/pl/api.php?action=visualeditor&format=json&paction=wikitext&page=${pageName}&uselang=pl&formatversion=2`;
+  const r = await fetchWithRetry(editLink);
+  if (r.status !== 200) {
+    throw new Error(`Failed to fetch ${url}`);
+  }
+  const jsonData = await r.json();
+  const code: string = jsonData.visualeditor.content;
+
+  const name = decodeURIComponent(
+    pageName
+      .replace("/Sezon_1", "")
+      .replace("/_Sezon_2", "")
+      .replace("/Sezon_2", "")
+      .replaceAll("_", " ")
+      .trim()
+  );
+  // console.log(name);
 
   const mainComponentName = (function () {
     if (code.includes("{{InfoboxPostać")) {
@@ -177,7 +196,10 @@ async function getCharacterDetails(url: string) {
       "https://youtube.com/",
       "https://www.youtube.com/"
     );
-    if (socialName == 'twitch' && !socialLink.startsWith("https://www.twitch.tv/")) {
+    if (
+      socialName == "twitch" &&
+      !socialLink.startsWith("https://www.twitch.tv/")
+    ) {
       return null; // incorrect link ex: https://5city.fandom.com/pl/wiki/Mac_Taylor
     }
 
@@ -230,7 +252,9 @@ export type CharacterData = {
   };
 };
 
-export async function getAllFiveCityCharacters(concurency = 100): Promise<CharacterData[]> {
+export async function getAllFiveCityCharacters(
+  concurency = 100
+): Promise<CharacterData[]> {
   const limit = pLimit(concurency);
 
   const url_s2 = "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87";
@@ -238,7 +262,7 @@ export async function getAllFiveCityCharacters(concurency = 100): Promise<Charac
     "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87_(Sezon_1)";
 
   // wszystkie postaci
-  console.log('Tworzę listę linków postaci');
+  console.log("Tworzę listę linków postaci");
   let [fandomLinkList, sezon1LinkList] = await Promise.all([
     getAllCharacterLinks(url_s2),
     getAllCharacterLinks(url_s1),
@@ -259,7 +283,7 @@ export async function getAllFiveCityCharacters(concurency = 100): Promise<Charac
   let characterDetailsList = await Promise.all(promiseList);
 
   // SYNCHRONOUS DEBUG CODE (for debuging purposes)
-  // const characterDetailsList: Data = [];
+  // const characterDetailsList = [];
   // for (let i = 0; i < fandomLinkList.length; i++) {
   //   const url = fandomLinkList[i];
   //   characterDetailsList.push(await getCharacterDetails(url));
