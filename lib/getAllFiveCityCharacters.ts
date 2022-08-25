@@ -234,14 +234,14 @@ export async function getAllFiveCityCharacters(concurency = 100): Promise<Charac
   const limit = pLimit(concurency);
 
   const url_s2 = "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87";
-  const url_s1 =
-    "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87_(Sezon_1)";
+  // const url_s1 = "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87_(Sezon_1)";
 
   // wszystkie postaci
   console.log('Tworzę listę linków postaci');
   let [fandomLinkList, sezon1LinkList] = await Promise.all([
     getAllCharacterLinks(url_s2),
-    getAllCharacterLinks(url_s1),
+    []
+    // getAllCharacterLinks(url_s1),
   ]);
   // console.log(fandomLinkList.length);
   // console.log(sezon1LinkList.length);
