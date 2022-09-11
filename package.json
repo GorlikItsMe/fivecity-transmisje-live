@@ -12,7 +12,7 @@
     "@fortawesome/fontawesome-free": "6.1.2",
     "@twurple/api": "5.2.3",
     "@twurple/auth": "5.2.3",
-    "async-mutex": "0.3.2",
+    "async-mutex": "0.4.0",
     "cors": "2.8.5",
     "next": "12.2.5",
     "node-html-parser": "5.4.1",
