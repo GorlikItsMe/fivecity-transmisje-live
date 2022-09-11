@@ -39,13 +39,16 @@ export type StreamerData = {
 };
 
 export async function getFiveCityStreamers() {
+  console.log("getFiveCityStreamers")
   const start_dt = new Date().getTime();
 
   const characters: CharactersApiResponse = JSON.parse(readFileSync(join(process.cwd(), "data", "characters.json"), { encoding: 'utf8' }))
   const twitchCachedUserList: TwitchCachedUser[] = JSON.parse(readFileSync(join(process.cwd(), "data", "twitchCachedUsersData.json"), { encoding: 'utf8' }))
+  console.log("1")
 
   // first call to api will generate OAuth token
   await api.users.getUserByName('ewroon');
+  console.log("2")
 
   let twitchStreamers = characters
     .map((p) => p.socialLinks.twitch)
@@ -149,8 +152,10 @@ export async function getFiveCityStreamers() {
     };
     return d;
   });
+  console.log("3")
 
   const streamersList = await Promise.all(data);
+  console.log("4")
 
   const sortedList = streamersList
     .filter(notEmpty)
