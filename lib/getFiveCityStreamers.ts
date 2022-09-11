@@ -154,7 +154,11 @@ export async function getFiveCityStreamers() {
   });
   console.log("3")
 
-  const streamersList = await Promise.all(data);
+  console.log(`3 pobieranie informacji o strimerach ${data.length}`)
+  const streamersList = await Promise.all(data).catch((err) => {
+    console.error(err);
+    return [] as (StreamerData | null)[]
+  })
   console.log("4")
 
   const sortedList = streamersList
