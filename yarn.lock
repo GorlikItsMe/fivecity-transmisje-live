@@ -232,17 +232,6 @@
   dependencies:
     tslib "^2.4.0"
 
-"@twurple/api-call@^5.2.2":
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/@twurple/api-call/-/api-call-5.2.2.tgz#3fc371d23248755d575f387a19c1d965b53d9247"
-  integrity sha512-djHcTgTxDVx9A9D91HlPasAzTDeQMN6DA1Up7uAtKpJIEZVGeGaYG44dutko9U/An4ZIzQ+NjQkV/2hmdb4uTw==
-  dependencies:
-    "@d-fischer/cross-fetch" "^4.0.2"
-    "@d-fischer/qs" "^7.0.2"
-    "@twurple/common" "^5.2.2"
-    "@types/node-fetch" "^2.5.7"
-    tslib "^2.0.3"
-
 "@twurple/api-call@^5.2.3":
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/@twurple/api-call/-/api-call-5.2.3.tgz#7195891ea880a5499f4e635658453184e5466082"
@@ -254,18 +243,18 @@
     "@types/node-fetch" "^2.5.7"
     tslib "^2.0.3"
 
-"@twurple/api@5.2.2":
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/@twurple/api/-/api-5.2.2.tgz#80c4c1c8d18307531fee435c549f50564d24ba46"
-  integrity sha512-IsKpYBrfIDQQfEIxjMjQ9gNqMQeHhNOyynEQX/ozROku65Jo8wJYvtAFyFcWJRbgnxaTBFEkqZ95M1ucjmuo+Q==
+"@twurple/api@5.2.3":
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/@twurple/api/-/api-5.2.3.tgz#cee29657d380249569d3bf3007422d42f65ea8f2"
+  integrity sha512-JJVfxWfK4SdJVNzoOiI+0lrbP3ltetNAyhLv/bOjh4ZlUboMhZGxfzWmIu8yBABDybXL+qkI/DRrqtrKHw/O0Q==
   dependencies:
     "@d-fischer/cache-decorators" "^3.0.0"
     "@d-fischer/detect-node" "^3.0.1"
     "@d-fischer/logger" "^4.0.0"
     "@d-fischer/rate-limiter" "^0.6.1"
     "@d-fischer/shared-utils" "^3.2.0"
-    "@twurple/api-call" "^5.2.2"
-    "@twurple/common" "^5.2.2"
+    "@twurple/api-call" "^5.2.3"
+    "@twurple/common" "^5.2.3"
     tslib "^2.0.3"
 
 "@twurple/auth@5.2.3":
@@ -277,15 +266,6 @@
     "@d-fischer/shared-utils" "^3.2.0"
     "@twurple/api-call" "^5.2.3"
     "@twurple/common" "^5.2.3"
-    tslib "^2.0.3"
-
-"@twurple/common@^5.2.2":
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/@twurple/common/-/common-5.2.2.tgz#ada0c095cb5819f9d38612d83666772cb069209e"
-  integrity sha512-GKg2256HZMhwbWpIUrH+o4H4FCEu2n/8Nn+k5iRb3bbCg4bSlPFGLvxsQrF8cbySyOqpOiqPRmvQQrnBwmsclg==
-  dependencies:
-    "@d-fischer/shared-utils" "^3.2.0"
-    klona "^2.0.4"
     tslib "^2.0.3"
 
 "@twurple/common@^5.2.3":
