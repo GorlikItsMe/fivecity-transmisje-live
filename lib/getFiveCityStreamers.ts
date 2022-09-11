@@ -6,6 +6,7 @@ import { readFileSync } from "fs";
 import { TwitchCachedUser } from "./getTwitchUsersData";
 import { notEmpty } from './notEmpty';
 import streamersWhitelistRaw from '../data/streamersWhitelist.json'
+import pLimit from "p-limit";
 
 const streamersWhitelist: string[] = streamersWhitelistRaw
 
@@ -14,6 +15,8 @@ const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const api = new ApiClient({ authProvider });
+
+const limit = pLimit(50);
 
 const GTA = "Grand Theft Auto V";
 
@@ -58,7 +61,8 @@ export async function getFiveCityStreamers() {
   );
   console.log(`Sprawdzam ${twitchStreamers.length} Streamerów...`);
 
-  const data = twitchStreamers.map(async (twitchUrl) => {
+  // const data = twitchStreamers.map(async (twitchUrl) => {
+  const data = twitchStreamers.map((twitchUrl) => limit(async () => {
     const myCharList = characters.filter(
       (c) => c.socialLinks.twitch === twitchUrl
     );
@@ -151,7 +155,9 @@ export async function getFiveCityStreamers() {
       }),
     };
     return d;
-  });
+    
+  // });
+  }))
   console.log("3")
 
   console.log(`3 pobieranie informacji o strimerach ${data.length}`)
