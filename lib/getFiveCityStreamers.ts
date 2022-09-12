@@ -125,6 +125,7 @@ export async function getFiveCityStreamers() {
         streamersUserList.push(user);
       }else{
         // not found in cache
+        console.log(` ${channelName} not found in cache`)
         streamersUsernameNotFoundInCacheList.push(channelName);
       }
     });
