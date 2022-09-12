@@ -1,12 +1,11 @@
 import { Data as CharactersApiResponse } from "../pages/api/v1/characters";
 import { ClientCredentialsAuthProvider } from "@twurple/auth";
-import { ApiClient } from "@twurple/api";
+import { ApiClient, HelixStream } from "@twurple/api";
 import { join } from "path";
 import { readFileSync } from "fs";
 import { TwitchCachedUser } from "./getTwitchUsersData";
 import { notEmpty } from './notEmpty';
 import streamersWhitelistRaw from '../data/streamersWhitelist.json'
-import pLimit from "p-limit";
 
 const streamersWhitelist: string[] = streamersWhitelistRaw
 
@@ -15,8 +14,6 @@ const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const api = new ApiClient({ authProvider });
-
-const limit = pLimit(50);
 
 const GTA = "Grand Theft Auto V";
 
@@ -41,131 +38,143 @@ export type StreamerData = {
   characters: CharacterData[];
 };
 
+
+function chunk<T>(items: T[], size: number): T[][] {  
+  const chunks = []
+  // items = [].concat(...items)  // typescript dont like it but all works without it soo why it is here?
+  while (items.length) {
+    chunks.push(
+      items.splice(0, size)
+    )
+  }
+  return chunks
+}
+
+
+function getIsFiveCityLive(isLive: boolean, stream: HelixStream| null, channelName: string){
+  if (!isLive) { return false }
+  if (stream?.gameName !== GTA) { return false }
+  const sTitle = stream.title;
+
+  // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
+  const whitelist = ["[5city]", "5city", "fivecity", "5miasto", "5stadt"];
+  const blacklist = ["77rp", "ExileRP", "pixarp", "adrenalinarp", "pixa"];
+
+  for (let i = 0; i < blacklist.length; i++) {
+    const badWord = blacklist[i];
+    if (sTitle.toLowerCase().includes(badWord.toLowerCase())) {
+      return false; // bad word detected
+    }
+  }
+
+  for (let i = 0; i < whitelist.length; i++) {
+    const goodWord = whitelist[i];
+    if (sTitle.toLowerCase().includes(goodWord.toLowerCase())) {
+      return true; // success
+    }
+  }
+
+  const isWhitelisted = streamersWhitelist.find((v) => v.toLowerCase() == channelName.toLowerCase()) !== undefined
+  if (isWhitelisted) {
+    return true; // whitelisted soo only check is he play gta v
+  }
+
+  // Nie mogę być pewny czy to jest live z FiveCity czy z innego serwera GTA RP
+  return false;
+}
+
 export async function getFiveCityStreamers() {
   console.log("getFiveCityStreamers")
   const start_dt = new Date().getTime();
 
   const characters: CharactersApiResponse = JSON.parse(readFileSync(join(process.cwd(), "data", "characters.json"), { encoding: 'utf8' }))
   const twitchCachedUserList: TwitchCachedUser[] = JSON.parse(readFileSync(join(process.cwd(), "data", "twitchCachedUsersData.json"), { encoding: 'utf8' }))
-  console.log("1")
+  
 
   // first call to api will generate OAuth token
+  console.log("Sprawdz czy OAuth token działa")
   await api.users.getUserByName('ewroon');
-  console.log("2")
-
+  
+  console.log("Stwórz listę streamerów twitch")
   let twitchStreamers = characters
     .map((p) => p.socialLinks.twitch)
     .filter(notEmpty);
   twitchStreamers = twitchStreamers.filter(
     (c, i) => twitchStreamers.indexOf(c) === i
   );
-  console.log(`Sprawdzam ${twitchStreamers.length} Streamerów...`);
+  console.log(`Będę sprawdzał ${twitchStreamers.length} Streamerów...`);
 
-  // const data = twitchStreamers.map(async (twitchUrl) => {
-  const data = twitchStreamers.map((twitchUrl) => limit(async () => {
-    const myCharList = characters.filter(
-      (c) => c.socialLinks.twitch === twitchUrl
-    );
+  // dane o kontach twitch
+  const chunked = chunk(twitchStreamers, 50)
 
-    const channelName = twitchUrl.replace("https://www.twitch.tv/", "");
+  console.log("Stwórz listę kont twitch")
+  const twitchUserList = await Promise.all(chunked.map(async (thisChunk) => {
+    // lista loginów
+    const streamersUsernameList = thisChunk.map((twitchUrl) => {
+      return twitchUrl.replace("https://www.twitch.tv/", "");
+    })
 
-    let user = twitchCachedUserList.find((v) => v.displayName.toLowerCase() == channelName.toLowerCase()) ?? null
-    // const user = await api.users.getUserByName(channelName).catch((err) => { return null })
-    if (user == null) {
-      console.log(`Not found ${channelName} in twitchCachedUsersData.json`)
-      // cant find cached data about that streamer do it manualy
-      user = await api.users.getUserByName(channelName).catch((err) => { return null })
-      if (user == null) {
-        return null; // cant find, maybe banned
+    // sprawdz czy mam je w cache
+    const streamersUserList: TwitchCachedUser[] = []
+    const streamersUsernameNotFoundInCacheList: string[] = [];
+
+    streamersUsernameList.forEach(channelName => {
+      let user = twitchCachedUserList.find((v) => v.displayName.toLowerCase() == channelName.toLowerCase()) ?? null
+      if (user){
+        // found in cache
+        streamersUserList.push(user);
+      }else{
+        // not found in cache
+        streamersUsernameNotFoundInCacheList.push(channelName);
       }
+    });
 
-      // return {
-      //   image: "",
-      //   name: "",
-      //   socialMedia: {
-      //     twitch: null,
-      //     twitter: null,
-      //     instagram: null,
-      //     youtube: null,
-      //     facebook: null,
-      //   },
-      //   viewerCount: 0,
-      //   isLive: false,
-      //   characters: [],
-      // }
-    }
-    const stream = await api.streams.getStreamByUserId(user.id)
+    // pobierz na raz informacje o wielu streamerach
+    const fetchedUsers = await api.users.getUsersByNames(streamersUsernameNotFoundInCacheList)
+    return streamersUserList.concat(fetchedUsers)
+  }));
 
-    let isLive = stream !== null;
-    let viewerCount = stream?.viewers ?? 0;
+  console.log("Pobierz informacje o obecnie prowadzonych transmisjach")
+  const dataList = await Promise.all(twitchUserList.map(async (twitchUserList) => {
+    const userIdList = twitchUserList.map(v => v.id)
+    const streamList = await api.streams.getStreamsByUserIds(userIdList)
 
-    const isFiveCityLive = (function () {
-      if (!isLive) { return false }
-      if (stream?.gameName !== GTA) { return false }
-      const sTitle = stream.title;
+    return twitchUserList.map((user) => {
+      const myCharList = characters.filter(
+        (c) => c.socialLinks.twitch?.toLowerCase() === `https://www.twitch.tv/${user.displayName}`.toLowerCase()
+      );
 
-      // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
-      const whitelist = ["[5city]", "5city", "fivecity", "5miasto", "5stadt"];
-      const blacklist = ["77rp", "ExileRP", "pixarp", "adrenalinarp", "pixa"];
+      const stream = streamList.find((s) => s.userId == user.id) ?? null;
+      let isLive = stream !== null
+      const isFiveCityLive = getIsFiveCityLive(isLive, stream, user.displayName)
+      const viewerCount = stream?.viewers ?? 0;
 
-      for (let i = 0; i < blacklist.length; i++) {
-        const badWord = blacklist[i];
-        if (sTitle.toLowerCase().includes(badWord.toLowerCase())) {
-          return false; // bad word detected
-        }
+      return {
+        image: user.profilePictureUrl,
+        name: user.displayName,
+        socialMedia: {
+          twitch: myCharList[0].socialLinks.twitch,
+          twitter: myCharList[0].socialLinks.twitter,
+          instagram: myCharList[0].socialLinks.instagram,
+          youtube: myCharList[0].socialLinks.youtube,
+          facebook: myCharList[0].socialLinks.facebook,
+        },
+        viewerCount: isFiveCityLive ? viewerCount : 0,
+        isLive: isFiveCityLive,
+
+        characters: myCharList.map((c) => {
+          return {
+            name: c.name,
+            wikiLink: c.wikiLink,
+            image: c.image,
+          };
+        }),
       }
-
-      for (let i = 0; i < whitelist.length; i++) {
-        const goodWord = whitelist[i];
-        if (sTitle.toLowerCase().includes(goodWord.toLowerCase())) {
-          return true; // success
-        }
-      }
-
-      const isWhitelisted = streamersWhitelist.find((v) => v.toLowerCase() == channelName.toLowerCase()) !== undefined
-      if (isWhitelisted) {
-        return true; // whitelisted soo only check is he play gta v
-      }
-
-      // Nie mogę być pewny czy to jest live z FiveCity czy z innego serwera GTA RP
-      return false;
-    })()
-
-
-    let d: StreamerData;
-    d = {
-      image: user.profilePictureUrl,
-      name: user.displayName,
-      socialMedia: {
-        twitch: myCharList[0].socialLinks.twitch,
-        twitter: myCharList[0].socialLinks.twitter,
-        instagram: myCharList[0].socialLinks.instagram,
-        youtube: myCharList[0].socialLinks.youtube,
-        facebook: myCharList[0].socialLinks.facebook,
-      },
-      viewerCount: isFiveCityLive ? viewerCount : 0,
-      isLive: isFiveCityLive,
-
-      characters: myCharList.map((c) => {
-        return {
-          name: c.name,
-          wikiLink: c.wikiLink,
-          image: c.image,
-        };
-      }),
-    };
-    return d;
-    
-  // });
+    })
   }))
-  console.log("3")
 
-  console.log(`3 pobieranie informacji o strimerach ${data.length}`)
-  const streamersList = await Promise.all(data).catch((err) => {
-    console.error(err);
-    return [] as (StreamerData | null)[]
-  })
-  console.log("4")
+  const esdl: StreamerData[] = []; // fix for typescript
+  const streamersList: StreamerData[] = esdl.concat(...dataList)
 
   const sortedList = streamersList
     .filter(notEmpty)
