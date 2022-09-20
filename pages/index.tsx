@@ -10,7 +10,7 @@ import { MainStreamerCard } from "../components/MainStreamerCard";
 const isDebug = process.env.NEXT_PUBLIC_DEBUG?.toLowerCase() == "true" ?? false;
 const apiUrl = isDebug
   ? "https://5miasto.pl/api/v1/streamers_live"
-  : "/api/v1/streamers";
+  : "/api/v1/streamers_live";
 
 const Home: NextPage = () => {
   const [streamersList, setStreamersList] = useState<ApiStreamersData | null>(
@@ -54,7 +54,14 @@ const Home: NextPage = () => {
           {isLoading && <p>Ładowanie...</p>}
         </div>
         {!isLoading && streamersList.length == 0 && (
-          <p>Aktualnie nikt nie streamuje {":-("}</p>
+          <div style={{ textAlign: "center" }}>
+            <p>Aktualnie nikt nie streamuje {":-("}</p>
+            <p>
+              Ale jeżeli szukasz informacji o odgrywanych postaciach to
+              zapraszam
+            </p>
+            <a href="https://5city.fandom.com/pl/">5city.fandom.com</a>
+          </div>
         )}
         {!isLoading && streamersList.length != 0 && (
           <>
