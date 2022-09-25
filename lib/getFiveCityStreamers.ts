@@ -16,6 +16,8 @@ const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const api = new ApiClient({ authProvider });
 
 const GTA = "Grand Theft Auto V";
+const ART = "Art";
+const GAMENAMELIST = [GTA, ART];
 
 export type CharacterData = {
   name: string;
@@ -53,7 +55,8 @@ function chunk<T>(items: T[], size: number): T[][] {
 
 function getIsFiveCityLive(isLive: boolean, stream: HelixStream| null, channelName: string){
   if (!isLive) { return false }
-  if (stream?.gameName !== GTA) { return false }
+  if (!stream) { return false }
+  if (!GAMENAMELIST.includes(stream.gameName)) { return false }
   const sTitle = stream.title;
 
   // nie wszyscy mają odpowiednie tytuły no ale trudno nic z tym nie zrobimy
