@@ -38,5 +38,8 @@ export async function getTwitchUsersData(concurency: number) {
                 }
             })
         )
-    return (await Promise.all(twitchCachedUserData)).filter(notEmpty);
+    const twitchUsersList = await Promise.all(twitchCachedUserData);
+    const clearedTwitchUsersList = twitchUsersList.filter(notEmpty)
+    console.log(`Zapisano ${clearedTwitchUsersList.length} informacji o kontach twitch`)
+    return clearedTwitchUsersList
 }
