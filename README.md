@@ -48,6 +48,14 @@ Start production build:
 yarn start
 ```
 
+or
+
+```bash
+docker-compose up -d
+# or
+docker-compose -f docker-compose.local.yml up -d
+```
+
 ## Contributing
 
 Jeśli chcesz przyczynić się do projektu i ulepszyć go, nie krępuj się, Twoja pomoc jest mile widziana. Czekam na twoje PRy ;-)
