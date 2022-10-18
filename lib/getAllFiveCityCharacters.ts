@@ -1,5 +1,8 @@
 import { parse } from "node-html-parser";
 import pLimit from "p-limit";
+import { createLogger } from "./logger";
+
+const logger = createLogger("getAllFiveCityCharacters");
 
 function caseInsensetiveSplit(str: string, separator: string) {
   // https://stackoverflow.com/questions/67227386/javascript-how-to-make-a-split-case-insensitive
@@ -28,7 +31,7 @@ function fetchWithRetry(
 ): Promise<Response> {
   return fetch(input, init).catch((error) => {
     if (maxRetry > 0) {
-      console.log(`Retry ${input} (${maxRetry})`);
+      logger.warn(`Retry ${input} (${maxRetry})`);
       return fetchWithRetry(input, init, maxRetry - 1);
     }
     throw error;
@@ -43,7 +46,7 @@ function getImageUrlByNameFromFandom(filename: string): Promise<string> {
     .then((r) => r.json())
     .then((r) => {
       if (r.rawImageUrl == undefined) {
-        console.log(url);
+        logger.info(url);
       }
       return r.rawImageUrl ?? null;
     });
@@ -100,7 +103,7 @@ async function getCharacterDetails(url: string) {
 
   if (mainComponentName == "") {
     // incorrect data ex: https://5city.fandom.com/pl/wiki/Leo_Griffin?action=edit
-    console.log(`Niepoprawna strona`, url);
+    logger.warn(`Niepoprawna strona`, url);
     return {
       wikiLink: url,
       image: null,
@@ -166,6 +169,7 @@ async function getCharacterDetails(url: string) {
     let socialLink = socialTag
       .replaceAll("]", "")
       .replaceAll("[", "")
+      .replaceAll("}", "")
       .split(" ")[0];
 
     // link normalizer
@@ -262,7 +266,7 @@ export async function getAllFiveCityCharacters(
     "https://5city.fandom.com/pl/wiki/Kategoria:Posta%C4%87_(Sezon_1)";
 
   // wszystkie postaci
-  console.log("Tworzę listę linków postaci");
+  logger.info("Tworzę listę postaci");
   let [fandomLinkList, sezon1LinkList] = await Promise.all([
     getAllCharacterLinks(url_s2),
     getAllCharacterLinks(url_s1),
@@ -276,7 +280,7 @@ export async function getAllFiveCityCharacters(
     (link, index) => fandomLinkList.indexOf(link) == index
   );
 
-  console.log(`Pobieram informacje z ${fandomLinkList.length} stron`);
+  logger.info(`Pobieram informacje z ${fandomLinkList.length} stron`);
   const promiseList = fandomLinkList.map((url) =>
     limit(() => getCharacterDetails(url))
   );
@@ -289,7 +293,7 @@ export async function getAllFiveCityCharacters(
   //   characterDetailsList.push(await getCharacterDetails(url));
   // }
 
-  console.log(`Wczytano ${characterDetailsList.length} postaci`);
+  logger.info(`Wczytano ${characterDetailsList.length} postaci`);
 
   // usuń duplikaty postaci (są informacje o postaci z różnych sezonów, wyświetlaj zawsze najnowszy możliwy)
   characterDetailsList = characterDetailsList.filter((ch) => {
@@ -324,6 +328,6 @@ export async function getAllFiveCityCharacters(
     return false;
   });
 
-  console.log(`Po usunięciu duplikatów ${characterDetailsList.length} postaci`);
+  logger.info(`Po usunięciu duplikatów ${characterDetailsList.length} postaci`);
   return characterDetailsList;
 }
