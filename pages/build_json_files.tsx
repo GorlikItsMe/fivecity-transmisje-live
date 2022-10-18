@@ -12,7 +12,7 @@ export const getStaticProps: GetStaticProps = async () => {
   // create characters.json
   fs.writeFileSync(
     join(process.cwd(), "data", "characters.json"),
-    JSON.stringify(await getAllFiveCityCharacters(10))
+    JSON.stringify(await getAllFiveCityCharacters(30))
   );
 
   // create streamersById.json
