@@ -257,6 +257,17 @@
     "@types/node-fetch" "^2.5.7"
     tslib "^2.0.3"
 
+"@twurple/api-call@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@twurple/api-call/-/api-call-5.2.7.tgz#d7a2eeac43fadf77156924644df80663d39f4148"
+  integrity sha512-rRiU055qE1W61leu22tZVi+ky1s61ffY6LpDfZNAhNFkLqCBMhIdtlnKSnyp6Ez4J83CJ6UhHaHcTP2MPJv6Yw==
+  dependencies:
+    "@d-fischer/cross-fetch" "^4.0.2"
+    "@d-fischer/qs" "^7.0.2"
+    "@twurple/common" "^5.2.7"
+    "@types/node-fetch" "^2.5.7"
+    tslib "^2.0.3"
+
 "@twurple/api@5.2.4":
   version "5.2.4"
   resolved "https://registry.yarnpkg.com/@twurple/api/-/api-5.2.4.tgz#ee919355c18986eff7cbac55539a55c4c0db0561"
@@ -271,21 +282,30 @@
     "@twurple/common" "^5.2.4"
     tslib "^2.0.3"
 
-"@twurple/auth@5.2.4":
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/@twurple/auth/-/auth-5.2.4.tgz#42bd782e5e94089e480a23480e60e65c1dbf4688"
-  integrity sha512-xPYCBhhc547kvRCqXA8P9lf2OU5py9Vf0h8gKTBuOXDo7/rNZUzl8NPR8MOpAkHlJGPpXEFRNIHyYmgaT2IC3A==
+"@twurple/auth@5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@twurple/auth/-/auth-5.2.7.tgz#6e3a77200e87c93bc174dee85dc46d7c3606eb9a"
+  integrity sha512-HBRhrdrNqhUfBx0zK/ju2mx6GcG4RfRFh7mnK4o45ftuSp9fIvtOs1ucNZ3VkkhOuNuB7yUfLWjBhGSgz175+g==
   dependencies:
     "@d-fischer/logger" "^4.0.0"
     "@d-fischer/shared-utils" "^3.2.0"
-    "@twurple/api-call" "^5.2.4"
-    "@twurple/common" "^5.2.4"
+    "@twurple/api-call" "^5.2.7"
+    "@twurple/common" "^5.2.7"
     tslib "^2.0.3"
 
 "@twurple/common@^5.2.4":
   version "5.2.4"
   resolved "https://registry.yarnpkg.com/@twurple/common/-/common-5.2.4.tgz#751b9d0d948ae24622154e38354b49d7451bc54c"
   integrity sha512-XfdBvBw4BuvAO2NYTjN80hfTZlbDsjQHX3XNKLFGvTw7a0vMd68ThyuDLLHaMJvW+1fpWAAGF7gnDxZCmzYnAw==
+  dependencies:
+    "@d-fischer/shared-utils" "^3.2.0"
+    klona "^2.0.4"
+    tslib "^2.0.3"
+
+"@twurple/common@^5.2.7":
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/@twurple/common/-/common-5.2.7.tgz#a0b8880abd0dcaa10c16ba63c4ba4a4a9ad0a6eb"
+  integrity sha512-d/z/JinTUiG1a3ycNHs7TLQm2QU5iJ+uMMzN6rWhZ3BBktDloYTktH1W1cYK/rhYISyApMLmxCZYmDbtuJ99TA==
   dependencies:
     "@d-fischer/shared-utils" "^3.2.0"
     klona "^2.0.4"
