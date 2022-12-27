@@ -170,6 +170,7 @@ async function getCharacterDetails(url: string) {
       .replaceAll("]", "")
       .replaceAll("[", "")
       .replaceAll("}", "")
+      .trim()
       .split(" ")[0];
 
     // link normalizer
