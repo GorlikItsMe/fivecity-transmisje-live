@@ -226,7 +226,13 @@ async function getCharacterDetails(url: string) {
 }
 
 async function getAllCharacterLinks(url: string): Promise<string[]> {
-  const root = parse(await fetchWithRetry(url).then((res) => res.text()));
+  const root = parse(
+    await fetchWithRetry(url + `?random_string=6ad5b8aads87b`).then((res) =>
+      res.text()
+    )
+  );
+  // Why is there that random string? becouse fandom is weird and cache pages in weird way,
+  // i make my own "cache key" and wish when i will try use it page will always show correct answer
   const nextPageUrl =
     root
       .querySelector(".category-page__pagination-next")
@@ -282,6 +288,8 @@ export async function getAllFiveCityCharacters(
   );
 
   logger.info(`Pobieram informacje z ${fandomLinkList.length} stron`);
+  // fandomLinkList.forEach((url) => logger.info(url)); // print all links
+
   const promiseList = fandomLinkList.map((url) =>
     limit(() => getCharacterDetails(url))
   );
