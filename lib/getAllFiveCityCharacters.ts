@@ -32,6 +32,7 @@ function fetchWithRetry(
   return fetch(input, init).catch((error) => {
     if (maxRetry > 0) {
       logger.warn(`Retry ${input} (${maxRetry})`);
+      logger.error(error);
       return fetchWithRetry(input, init, maxRetry - 1);
     }
     throw error;
