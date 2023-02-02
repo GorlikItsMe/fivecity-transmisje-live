@@ -53,7 +53,7 @@ function getImageUrlByNameFromFandom(filename: string): Promise<string> {
     });
 }
 
-async function getCharacterDetails(url: string) {
+export async function getCharacterDetails(url: string) {
   /*const editLink = `${url}?action=edit`;
   const r = await fetchWithRetry(editLink);
   if (r.status !== 200) {
@@ -93,6 +93,9 @@ async function getCharacterDetails(url: string) {
   // console.log(name);
 
   const mainComponentName = (function () {
+    if (code.includes("{{PostaćRP.ang")) {
+      return "PostaćRP.ang";
+    }
     if (code.includes("{{InfoboxPostać")) {
       return "InfoboxPostać";
     }
@@ -120,10 +123,16 @@ async function getCharacterDetails(url: string) {
   }
 
   const image = (function () {
-    const afterObraz =
-      mainComponentName == "PostaćRP"
-        ? code.split("PostaćRP")[1].split("obraz=")[1]
-        : code.split("InfoboxPostać")[1].split("zdjecie=")[1];
+    let afterObraz: string | undefined = undefined;
+    if (mainComponentName == "PostaćRP") {
+      afterObraz = code.split("PostaćRP")[1].split("obraz=")[1];
+    }
+    if (mainComponentName == "InfoboxPostać") {
+      afterObraz = code.split("InfoboxPostać")[1].split("zdjecie=")[1];
+    }
+    if (mainComponentName == "PostaćRP.ang") {
+      afterObraz = code.split("PostaćRP.ang")[1].split("image1=")[1];
+    }
     if (afterObraz == undefined) {
       return null;
     }
@@ -303,9 +312,21 @@ export async function getAllFiveCityCharacters(
   let characterDetailsList = await Promise.all(promiseList);
 
   // SYNCHRONOUS DEBUG CODE (for debuging purposes)
-  // const characterDetailsList = [];
+  // let characterDetailsList: {
+  //   wikiLink: string;
+  //   image: string | null;
+  //   name: string;
+  //   socialLinks: {
+  //     twitch: string | null;
+  //     twitter: string | null;
+  //     instagram: string | null;
+  //     youtube: string | null;
+  //     facebook: string | null;
+  //   };
+  // }[] = [];
   // for (let i = 0; i < fandomLinkList.length; i++) {
   //   const url = fandomLinkList[i];
+  //   console.log(url);
   //   characterDetailsList.push(await getCharacterDetails(url));
   // }
 
