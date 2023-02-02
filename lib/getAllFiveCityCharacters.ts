@@ -232,9 +232,10 @@ async function getAllCharacterLinks(url: string): Promise<string[]> {
   //     res.text()
   //   )
   // );
+  const rand = Math.floor(Math.random() * 10000000);
   const root = parse(
-    await fetchWithRetry(url + `?random_string=6ad5b8aads87b`).then((res) =>
-      res.text()
+    await fetchWithRetry(url + `?giveMeWithoutCachePLS=5miasto_${rand}`).then(
+      (res) => res.text()
     )
   );
   // Why is there that random string? becouse fandom is weird and cache pages in weird way,
