@@ -227,16 +227,16 @@ async function getCharacterDetails(url: string) {
 }
 
 async function getAllCharacterLinks(url: string): Promise<string[]> {
-  const root = parse(
-    await fetchWithRetry(url).then((res) =>
-      res.text()
-    )
-  );
   // const root = parse(
-  //   await fetchWithRetry(url + `?random_string=6ad5b8aads87b`).then((res) =>
+  //   await fetchWithRetry(url).then((res) =>
   //     res.text()
   //   )
   // );
+  const root = parse(
+    await fetchWithRetry(url + `?random_string=6ad5b8aads87b`).then((res) =>
+      res.text()
+    )
+  );
   // Why is there that random string? becouse fandom is weird and cache pages in weird way,
   // i make my own "cache key" and wish when i will try use it page will always show correct answer
   const nextPageUrl =
