@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "6.2.1",
-    "@twurple/api": "6.0.5",
+    "@twurple/api": "5.3.4",
     "@twurple/auth": "5.3.4",
     "async-mutex": "0.4.0",
     "cors": "2.8.5",
