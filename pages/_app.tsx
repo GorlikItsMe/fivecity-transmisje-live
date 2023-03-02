@@ -6,7 +6,6 @@ import "@fortawesome/fontawesome-free/css/all.css";
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "G-HWN1F3Q20K";
 
 const App = ({ Component, pageProps }: AppProps) => {
-  const x = new Date().getTime();
   return (
     <>
       {/* Global Site Tag (gtag.js) - Google Analytics */}
@@ -42,7 +41,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           _paq.push(['setTrackerUrl', u+'rainbow.php']);
           _paq.push(['setSiteId', '2']);
           var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-          g.async=true; g.src=u+'unicorn_${x}.js'; s.parentNode.insertBefore(g,s);
+          g.async=true; g.src=u+'unicorn5.js'; s.parentNode.insertBefore(g,s);
         })();
         `,
         }}
