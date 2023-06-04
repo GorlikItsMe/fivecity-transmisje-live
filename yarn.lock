@@ -44,6 +44,15 @@
     "@d-fischer/shared-utils" "^3.2.0"
     tslib "^2.0.3"
 
+"@d-fischer/logger@^4.2.1":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@d-fischer/logger/-/logger-4.2.3.tgz#1c8f64a2dd560eb623b00eadffbd033a290fcc38"
+  integrity sha512-mJUx9OgjrNVLQa4od/+bqnmD164VTCKnK5B4WOW8TX5y/3w2i58p+PMRE45gUuFjk2BVtOZUg55JQM3d619fdw==
+  dependencies:
+    "@d-fischer/detect-node" "^3.0.1"
+    "@d-fischer/shared-utils" "^3.2.0"
+    tslib "^2.0.3"
+
 "@d-fischer/promise.allsettled@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@d-fischer/promise.allsettled/-/promise.allsettled-2.0.2.tgz#2f8d55dba8412f656d62885e723e9b591d45f71c"
@@ -78,6 +87,13 @@
   integrity sha512-XxzGpRh2GnY6OHID9erYfInDz4M2tG5fwIbfybkZZ4rfj2ODiy0mJiY7CGyPh8Z+bTZWETU5UyJwW8umYf/m7g==
   dependencies:
     "@types/node" "^14.11.2"
+    tslib "^2.4.1"
+
+"@d-fischer/shared-utils@^3.6.1":
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/@d-fischer/shared-utils/-/shared-utils-3.6.3.tgz#1178633bf5fe715cf6222a51f2b3169132496ba8"
+  integrity sha512-Lz+Qk1WJLVoeREOHPZcIDTHOoxecxMSG2sq+x1xWYCH1exqiMKMMx06pXdy15UzHG7ohvQRNXk2oHqZ9EOl9jQ==
+  dependencies:
     tslib "^2.4.1"
 
 "@dabh/diagnostics@^2.0.2":
@@ -250,6 +266,18 @@
     "@types/node-fetch" "^2.5.7"
     tslib "^2.0.3"
 
+"@twurple/api-call@6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@twurple/api-call/-/api-call-6.2.1.tgz#9fe5aed1e742895ced9a03667d65814b8c4e7869"
+  integrity sha512-w5SdEKbb6O7tScEo2FymlHMJ0hMYic9PJ8Gy43XzuNa7fbBpR06Um6aG9FUY7OmxnP7pWqhB3p1wSBV3+19b0Q==
+  dependencies:
+    "@d-fischer/cross-fetch" "^4.0.2"
+    "@d-fischer/qs" "^7.0.2"
+    "@d-fischer/shared-utils" "^3.6.1"
+    "@twurple/common" "6.2.1"
+    "@types/node-fetch" "^2.5.7"
+    tslib "^2.0.3"
+
 "@twurple/api@5.3.4":
   version "5.3.4"
   resolved "https://registry.yarnpkg.com/@twurple/api/-/api-5.3.4.tgz#b0986dce82942d8e2ebdd933bf21b07a0885488a"
@@ -264,15 +292,15 @@
     "@twurple/common" "5.3.4"
     tslib "^2.0.3"
 
-"@twurple/auth@5.3.4":
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/@twurple/auth/-/auth-5.3.4.tgz#e31c834278bd7995a30c978fdd81d4ccda8d1fa8"
-  integrity sha512-qoChaHplRLJQsQaz6bFstR+/6VpnyUUj69jbqcXsJEUsetXWjhLT3cp0JDVKs8r4qMjZptr4XYq8kfHFZJhbHg==
+"@twurple/auth@6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@twurple/auth/-/auth-6.2.1.tgz#bee2344eb8d565fdf1f3384feac5678d08c68b33"
+  integrity sha512-WrjasxjYOSfx5F42yt5Uxry/q2+EQQPhtOFOVZgienrmLXg+xv0uQ1ZdSXJiRSgzd0qaEj+a+ezWWf37NtBK8Q==
   dependencies:
-    "@d-fischer/logger" "^4.0.0"
-    "@d-fischer/shared-utils" "^3.4.0"
-    "@twurple/api-call" "5.3.4"
-    "@twurple/common" "5.3.4"
+    "@d-fischer/logger" "^4.2.1"
+    "@d-fischer/shared-utils" "^3.6.1"
+    "@twurple/api-call" "6.2.1"
+    "@twurple/common" "6.2.1"
     tslib "^2.0.3"
 
 "@twurple/common@5.3.4":
@@ -281,6 +309,15 @@
   integrity sha512-vMpuhoNAlETwOSJDUYrxYBahAaLJWOn0lEs+eeCea32Z6cefvs/qXsQ3p2Kl9aY3bic+wGhHW0uB4Os7ZS3hHA==
   dependencies:
     "@d-fischer/shared-utils" "^3.4.0"
+    klona "^2.0.4"
+    tslib "^2.0.3"
+
+"@twurple/common@6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@twurple/common/-/common-6.2.1.tgz#749b6172490ff1b29ec63ebab604b5c7713d8957"
+  integrity sha512-ek9AYxnRUE86veaF1uQZYQOrZDZCSXLuSPryPItha7JlSwEeIYQQm0Y746cHDVKwcPQiNYJuzeDdnA6OYkNs4w==
+  dependencies:
+    "@d-fischer/shared-utils" "^3.6.1"
     klona "^2.0.4"
     tslib "^2.0.3"
 
