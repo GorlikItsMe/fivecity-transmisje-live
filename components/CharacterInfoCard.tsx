@@ -14,8 +14,8 @@ export function CharacterInfoCard({ character }: { character: CharacterData }) {
         <div className={styles.characterImage}>
           <Image
             src={character.image ?? unknownCharacter}
-            width={"70px"}
-            height={"100px"}
+            width="70"
+            height="100"
             objectFit="cover"
             sizes="(max-width: 70px) 100vw, 70px"
             alt={character.name}

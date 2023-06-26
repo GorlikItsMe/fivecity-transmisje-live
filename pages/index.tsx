@@ -45,8 +45,8 @@ const Home: NextPage = () => {
           <h1 className={styles.title}>
             <Image
               src={FiveCityLogo}
-              height="50px"
-              width="140px"
+              height="50"
+              width="140"
               alt="Fivecity logo"
             />{" "}
             transmisje live

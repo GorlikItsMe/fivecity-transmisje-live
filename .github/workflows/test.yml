@@ -14,10 +14,10 @@ jobs:
           node-version: "18.x"
 
       - name: Install dependencies
-        run: yarn
+        run: npm install
 
       - name: Lint
-        run: yarn lint
+        run: npm run lint
 
       # Wyłączone bo /pages/build_json_files.tsx
       # - name: Build

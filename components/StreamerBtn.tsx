@@ -59,8 +59,8 @@ export function StreamerBtn({
     <div className={klass} onClick={onClick}>
       <Image
         src={streamer.image}
-        width={"50px"}
-        height={"50px"}
+        width="50"
+        height="50"
         layout="intrinsic"
         alt={streamer.name}
         placeholder="blur"

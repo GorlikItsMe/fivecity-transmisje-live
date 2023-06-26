@@ -1,5 +1,5 @@
 import { Data as CharactersApiResponse } from "../pages/api/v1/characters";
-import { ClientCredentialsAuthProvider } from "@twurple/auth";
+import { AppTokenAuthProvider } from "@twurple/auth";
 import { ApiClient, HelixStream } from "@twurple/api";
 import { join } from "path";
 import { readFileSync } from "fs";
@@ -15,12 +15,13 @@ const streamersWhitelist: string[] = streamersWhitelistRaw;
 const clientId = process.env.TWITCH_API_CLIENT_ID ?? "";
 const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 
-const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
+const authProvider = new AppTokenAuthProvider(clientId, clientSecret);
 const api = new ApiClient({ authProvider });
 
 const GTA = "Grand Theft Auto V";
 const ART = "Art";
 const GAMENAMELIST = [GTA, ART];
+const TAGS_LIST = ["5City", "5city"]
 
 export type CharacterData = {
   name: string;
@@ -94,6 +95,11 @@ function getIsFiveCityLive(
     return true; // whitelisted soo only check is he play gta v
   }
 
+  if (TAGS_LIST.some((tag) => stream.tags.includes(tag))) {
+    // if stream have 5city tag
+    return true;
+  }
+
   // Nie mogę być pewny czy to jest live z FiveCity czy z innego serwera GTA RP
   return false;
 }
@@ -114,7 +120,11 @@ export async function getFiveCityStreamers() {
 
   // first call to api will generate OAuth token
   logger.info("Sprawdz czy OAuth token działa");
-  await api.users.getUserByName("ewroon");
+  await api.users.getUserByName("ewroon").catch((err) => {
+    logger.error("OAuth token nie działa");
+    logger.error(err);
+    throw err;
+  });
 
   logger.info("Stwórz listę streamerów twitch");
   let twitchStreamers = characters
@@ -189,11 +199,11 @@ export async function getFiveCityStreamers() {
           image: user.profilePictureUrl,
           name: user.displayName,
           socialMedia: {
-            twitch: myCharList[0].socialLinks.twitch,
-            twitter: myCharList[0].socialLinks.twitter,
-            instagram: myCharList[0].socialLinks.instagram,
-            youtube: myCharList[0].socialLinks.youtube,
-            facebook: myCharList[0].socialLinks.facebook,
+            twitch: myCharList[0]?.socialLinks.twitch,
+            twitter: myCharList[0]?.socialLinks.twitter,
+            instagram: myCharList[0]?.socialLinks.instagram,
+            youtube: myCharList[0]?.socialLinks.youtube,
+            facebook: myCharList[0]?.socialLinks.facebook,
           },
           viewerCount: isFiveCityLive ? viewerCount : 0,
           isLive: isFiveCityLive,
