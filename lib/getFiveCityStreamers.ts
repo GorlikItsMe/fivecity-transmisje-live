@@ -1,6 +1,6 @@
 import { Data as CharactersApiResponse } from "../pages/api/v1/characters";
-import { AppTokenAuthProvider } from "@twurple/auth";
-import { ApiClient, HelixStream } from "@twurple/api";
+import api from "./twitchApi";
+import { HelixStream } from "@twurple/api";
 import { join } from "path";
 import { readFileSync } from "fs";
 import { TwitchCachedUser } from "./getTwitchUsersData";
@@ -12,11 +12,7 @@ const logger = createLogger("getFiveCityStreamers");
 
 const streamersWhitelist: string[] = streamersWhitelistRaw;
 
-const clientId = process.env.TWITCH_API_CLIENT_ID ?? "";
-const clientSecret = process.env.TWITCH_API_CLIENT_SECRET ?? "";
 
-const authProvider = new AppTokenAuthProvider(clientId, clientSecret);
-const api = new ApiClient({ authProvider });
 
 const GTA = "Grand Theft Auto V";
 const ART = "Art";
@@ -196,7 +192,8 @@ export async function getFiveCityStreamers() {
         const viewerCount = stream?.viewers ?? 0;
 
         return {
-          image: user.profilePictureUrl,
+          // image: user.profilePictureUrl,
+          image: `/api/v1/avatar?displayName=${user.displayName}`,
           name: user.displayName,
           socialMedia: {
             twitch: myCharList[0]?.socialLinks.twitch,
