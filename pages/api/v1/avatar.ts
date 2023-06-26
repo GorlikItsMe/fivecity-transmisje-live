@@ -36,14 +36,15 @@ export default async function handler(
   logger.info(`displayName: ${displayName}`);
 
   const path = join(process.cwd(), "data", "twitchCachedUsersData.json");
-  try {
-    const content = readFileSync(path, { encoding: "utf8", flag: "r" });
-    const data = JSON.parse(content) as {
-      id: string;
-      displayName: string;
-      profilePictureUrl: string;
-    }[];
 
+  const content = readFileSync(path, { encoding: "utf8", flag: "r" });
+  const data = JSON.parse(content) as {
+    id: string;
+    displayName: string;
+    profilePictureUrl: string;
+  }[];
+
+  try {
     const cachedData = data.find(
       (v) => v.displayName.toLowerCase() == displayName.toLowerCase()
     );
@@ -55,7 +56,12 @@ export default async function handler(
       res.status(200).send(Buffer.from(buf));
       return;
     }
+  } catch (error) {
+    logger.error("from cache");
+    logger.error(error);
+  }
 
+  try {
     const profilePictureUrl = (await twitchApi.users.getUserByName(displayName))
       ?.profilePictureUrl;
 
@@ -70,7 +76,10 @@ export default async function handler(
     res.status(404).send("Not found");
     return;
   } catch (error) {
+    logger.error("from api");
     logger.error(error);
-    res.status(404).send("");
   }
+
+  res.status(404).send("");
+  return;
 }
