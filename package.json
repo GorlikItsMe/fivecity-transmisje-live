@@ -14,7 +14,7 @@
     "@twurple/auth": "6.2.1",
     "async-mutex": "0.4.0",
     "cors": "2.8.5",
-    "next": "12.3.4",
+    "next": "13.4.7",
     "node-html-parser": "6.1.5",
     "p-limit": "4.0.0",
     "react": "18.2.0",
@@ -31,7 +31,7 @@
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
     "eslint": "8.43.0",
-    "eslint-config-next": "12.3.4",
+    "eslint-config-next": "13.4.7",
     "memory-cache": "0.2.0",
     "typescript": "5.1.3"
   }
