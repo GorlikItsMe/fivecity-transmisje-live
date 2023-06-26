@@ -192,8 +192,8 @@ export async function getFiveCityStreamers() {
         const viewerCount = stream?.viewers ?? 0;
 
         return {
-          image: user.profilePictureUrl,
-          // image: `/api/v1/avatar?displayName=${user.displayName}`,
+          // image: user.profilePictureUrl,
+          image: `/api/v1/avatar?displayName=${user.displayName}`,
           name: user.displayName,
           socialMedia: {
             twitch: myCharList[0]?.socialLinks.twitch,

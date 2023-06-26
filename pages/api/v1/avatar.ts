@@ -15,10 +15,6 @@ const logger = createLogger("/api/v1/avatar");
 async function getIconByUrl(req: NextApiRequest, twitchImageUrl: string) {
   const url = new URL(`http://localhost:3000/_next/image?url=&w=64&q=75`);
   url.searchParams.set("url", twitchImageUrl);
-//   url.protocol = req.headers["x-forwarded-proto"]
-//     ? `${req.headers["x-forwarded-proto"]}:`
-//     : "http:";
-//   url.host = (req.headers["x-forwarded-host"] as string) ?? "localhost:3000";
   logger.info(url.href);
 
   const r = await fetch(url.href);
