@@ -35,31 +35,30 @@ export default async function handler(
   const displayName = `${req.query["displayName"]}`;
   logger.info(`displayName: ${displayName}`);
 
-  const path = join(process.cwd(), "data", "twitchCachedUsersData.json");
+  // const path = join(process.cwd(), "data", "twitchCachedUsersData.json");
+  // const content = readFileSync(path, { encoding: "utf8", flag: "r" });
+  // const data = JSON.parse(content) as {
+  //   id: string;
+  //   displayName: string;
+  //   profilePictureUrl: string;
+  // }[];
 
-  const content = readFileSync(path, { encoding: "utf8", flag: "r" });
-  const data = JSON.parse(content) as {
-    id: string;
-    displayName: string;
-    profilePictureUrl: string;
-  }[];
+  // try {
+  //   const cachedData = data.find(
+  //     (v) => v.displayName.toLowerCase() == displayName.toLowerCase()
+  //   );
 
-  try {
-    const cachedData = data.find(
-      (v) => v.displayName.toLowerCase() == displayName.toLowerCase()
-    );
-
-    if (cachedData) {
-      const buf = await getIconByUrl(req, cachedData.profilePictureUrl);
-      res.setHeader("Content-Type", "image/png");
-      res.setHeader("Cache-Control", "s-maxage=86400"); // cache 1 day
-      res.status(200).send(Buffer.from(buf));
-      return;
-    }
-  } catch (error) {
-    logger.error("from cache");
-    logger.error(error);
-  }
+  //   if (cachedData) {
+  //     const buf = await getIconByUrl(req, cachedData.profilePictureUrl);
+  //     res.setHeader("Content-Type", "image/png");
+  //     res.setHeader("Cache-Control", "s-maxage=86400"); // cache 1 day
+  //     res.status(200).send(Buffer.from(buf));
+  //     return;
+  //   }
+  // } catch (error) {
+  //   logger.error("from cache");
+  //   logger.error(error);
+  // }
 
   try {
     const profilePictureUrl = (await twitchApi.users.getUserByName(displayName))
