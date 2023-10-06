@@ -14,7 +14,7 @@
     "@twurple/auth": "6.2.1",
     "async-mutex": "0.4.0",
     "cors": "2.8.5",
-    "next": "13.4.7",
+    "next": "13.5.4",
     "node-html-parser": "6.1.5",
     "p-limit": "4.0.0",
     "react": "18.2.0",
